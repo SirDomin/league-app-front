@@ -3,25 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>League XD</title>
-    <style>
-        .card {
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-template-rows: repeat(4, auto);
-            grid-gap: 10px;
-        }
-        .team-100 {
-            background: #0051ff;
-        }
-        .team-200 {
-            background: #d50707;
-        }
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-gap: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css"/>
+
 </head>
 <body>
     <div id="container">
@@ -29,21 +12,17 @@
     </div>
     <script>
         const apiUrl = 'https://laptop.local';
-
         fetchAndDisplayData();
 
-        function getSummonerGames(summonerName) {
-
-        }
-
         function fetchAndDisplayData() {
+            const container = document.createElement('div');
+
             fetch(`${apiUrl}/game/last`)
                 .then(response => response.json())
                 .then(data => {
                     const participants = data.game.info.participants;
 
                     console.log(participants);
-                    const container = document.createElement('div');
                     container.classList.add('cards-container')
 
                     participants.forEach(participant => {
@@ -74,43 +53,44 @@
                         card.appendChild(input);
 
                         container.appendChild(card);
-                    })
+                    });
+
+                    const submitButton = document.createElement('button');
+
+                    submitButton.textContent = 'Submit';
+                    submitButton.addEventListener('click', async () => {
+                        const inputs = document.querySelectorAll('input[type="text"]');
+
+                        const data = [];
+                        for (const input of inputs) {
+                            data.push({
+                                id: input.getAttribute('data-id'),
+                                comment: input.value,
+                            })
+                        }
+
+                        const response = await fetch(`${apiUrl}/game/save-result`, {
+                            method: 'POST',
+                            mode: 'no-cors', // no-cors, *cors, same-origin
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        window.location.href='room.html';
+                    });
+
+                    document.getElementById('container').appendChild(submitButton);
 
                     document.getElementById('container').appendChild(container);
                 });
+
+
         }
 
 
-        const submitButton = document.createElement('button');
 
-        submitButton.textContent = 'Submit';
-        submitButton.addEventListener('click', async () => {
-            const inputs = document.querySelectorAll('input[type="text"]');
-
-            const data = [];
-            for (const input of inputs) {
-                data.push({
-                    id: input.getAttribute('data-id'),
-                    comment: input.value,
-                })
-            }
-
-            const response = await fetch(`${apiUrl}/game/save-result`, {
-                method: 'POST',
-                mode: 'no-cors', // no-cors, *cors, same-origin
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            if (!response.ok) {
-                window.location.reload();
-            } else {
-                console.log('Request succeeded');
-            }
-        });
-
-        document.body.appendChild(submitButton);
 
 
     </script>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<div id="container">
+
+</div>
+<script>
+  const apiUrl = 'https://laptop.local';
+
+  showCurrentGame();
+
+  let champions = [];
+
+  function getChampionById(id) {
+    for(const champion in champions.data) {
+      if (champions.data[`${champion}`].key === `${id}`) {
+        return champions.data[`${champion}`]
+      }
+    }
+  }
+
+  fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
+          .then(response => response.json())
+          .then(data => {
+            champions = data;
+          })
+
+
+  function getGamesAsHTML(summonerId, container, label) {
+    fetch(`${apiUrl}/summoner/${summonerId}`)
+            .then(response => response.json())
+            .then(data => {
+              data.forEach(gameElement => {
+                container.appendChild(convertToGame(gameElement.info, gameElement.metadata));
+              })
+              label.classList.toggle('active');
+
+            })
+  }
+
+  const fieldsToDisplay = [
+    'championName',
+    'individualPosition',
+    'summonerName',
+    'pentaKills',
+    'visionScore',
+    'wardsPlaced',
+    'comment'
+  ];
+
+  function convertToGame(info, metadata) {
+    const participant = info.participants[0];
+
+    const div = document.createElement('div');
+    div.classList.add('game');
+
+    let dateItem = document.createElement('div');
+    const date = new Date(parseInt(info.gameCreation));
+    dateItem.textContent = `Date: ${date.toDateString()} ${date.getHours()}:${date.getMinutes()}`;
+
+    let modeItem = document.createElement('div');
+    modeItem.textContent = `Mode: ${info.gameMode}`;
+
+    div.appendChild(dateItem);
+    div.appendChild(modeItem);
+
+    fieldsToDisplay.forEach(field => {
+      let gridItem = document.createElement('div');
+      gridItem.textContent = `${field}: ` + participant[`${field}`];
+
+      div.appendChild(gridItem);
+    })
+
+    let gridItem = document.createElement('div');
+    gridItem.textContent = `K/D/A: ${participant.kills} / ${participant.deaths} / ${participant.assists}`;
+
+    div.appendChild(gridItem);
+
+    const gameId = document.createElement('a');
+    gameId.setAttribute('href', `game/${metadata.matchId}`);
+    gameId.textContent = `${metadata.matchId}`;
+    div.appendChild(gameId);
+
+    return div;
+  }
+
+  setInterval(() => {
+    waitForGame();
+  }, 5000);
+
+  function waitForGame() {
+    fetch(`${apiUrl}/game/active/SirDomin`)
+            .then(response => response.json())
+            .then(data => {
+              if (!data.info) {
+                window.location.href='room.html';
+              }
+            })
+  }
+
+  function showCurrentGame() {
+    fetch(`${apiUrl}/game/active/SirDomin`)
+            .then(response => response.json())
+            .then(data => {
+              if (!data.info) {
+                console.log('no game');
+                window.location.href='index.html';
+                return;
+              }
+
+              const participants = data.info;
+              container.classList.add('active-game-container')
+
+              participants.forEach(participant => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.classList.add('clickable');
+                card.classList.add(`team-${participant.team_id}`);
+                card.style.border = '1px solid black';
+                card.style.padding = '10px';
+                card.style.margin = '10px';
+                const gamesContainer = document.createElement('div');
+                gamesContainer.classList.add('game-container');
+
+
+                const label1 = document.createElement('label');
+                label1.textContent = `${participant.summoner_name}`;
+                card.appendChild(label1);
+
+                const label2 = document.createElement('label');
+                label2.textContent = `${getChampionById(participant.champion_id).id}`;
+
+                card.appendChild(label2);
+
+                const label3 = document.createElement('label');
+                label3.textContent = `Games: ${participant.games_played}`;
+                card.appendChild(label3);
+                container.appendChild(card);
+
+                const label4 = document.createElement('label');
+                label4.textContent = `SHOW GAMES`;
+                label4.classList.add('show-games');
+                card.appendChild(label4);
+
+                label4.addEventListener('click', () => {
+                  gamesContainer.classList.toggle('show')
+                  gamesContainer.innerHTML = '';
+                  if (gamesContainer.classList.contains('show')) {
+                    getGamesAsHTML(participant.summoner_id, gamesContainer, label4);
+                  } else {
+                    label4.classList.remove('active');
+
+                  }
+
+                })
+
+                card.appendChild(gamesContainer);
+
+              });
+            })
+  }
+</script>
+</body>
+</html>

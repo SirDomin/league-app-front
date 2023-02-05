@@ -1,0 +1,78 @@
+.card {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, auto);
+}
+.team-100 {
+    background: #0051ff;
+}
+.team-200 {
+    background: #d50707;
+}
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 10px;
+}
+
+.active-game-container {
+
+}
+
+.active-game-container .card {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: minmax(0, 20px) 1fr;
+}
+
+.show-games {
+    cursor:pointer;
+}
+
+.show-games.active {
+    background: #7e817f;
+}
+
+.active-game-container label {
+    height: 20px;
+}
+.game-container{
+    background: red;
+    grid-column: 1 / 5;
+    height: 0;
+}
+
+.show {
+    max-height: 400px;
+    height: auto;
+    transition: height 2s;
+    overflow-y: auto;
+}
+
+.game {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 10px;
+    background: #7e817f;
+    color: black;
+    align-content: center;
+    margin-bottom: 2px;
+}
+.loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.container-loader {
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+}
