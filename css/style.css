@@ -9,6 +9,10 @@
 .team-200 {
     background: #d50707;
 }
+
+.team-unknown {
+    background: #7e817f;
+}
 .cards-container {
     display: grid;
     grid-template-columns: repeat(5, 1fr);

@@ -7,12 +7,172 @@
 
 </head>
 <body>
+    <div>
+        <h1 id="header"></h1>
+    </div>
     <div id="container">
 
     </div>
     <script>
+        let currentGameState = null;
+
+        availableStates = {
+            'None': 'Main Menu',
+            'Lobby': 'Lobby',
+            'Matchmaking': 'Looking for game',
+            'ReadyCheck': 'Accepting',
+            'ChampSelect': 'Champion Select',
+            'InProgress': 'Waiting for game Result',
+            'WaitingForStats': 'Waiting for Stats',
+            'PreEndOfGame': 'Honor a Player',
+            'EndOfGame': 'End Of Game',
+        };
+
+        function stateChanged(previous, current) {
+            document.getElementById('header').innerHTML = availableStates[current];
+            console.log('State change: ',previous, '=>', current);
+            if(current === 'EndOfGame') {
+                saveGame()
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('header').innerHTML = 'Game Saved';
+
+                        fetchAndDisplayData();
+                    })
+            }
+            if (current === 'ChampSelect') {
+                showTeammates();
+            }
+
+            if (current === 'InProgress') {
+                document.getElementById('container').innerHTML = '';
+                showCurrentGame();
+            }
+
+            if (current === 'None' || current === 'Lobby') {
+            }
+
+        }
+
         const apiUrl = 'https://laptop.local';
-        fetchAndDisplayData();
+        const clientUrl = 'http://192.168.0.104:3000';
+
+        updateGameState();
+
+        function updateGameState() {
+            fetch(`${clientUrl}/game-state`)
+                .then(res => res.json())
+                .then(data => {
+
+                    if (currentGameState !== data.game_state) {
+                        stateChanged(currentGameState, data.game_state);
+                        currentGameState = data.game_state;
+                    }
+
+                    setTimeout(() => {
+                        updateGameState();
+                    }, 2000)
+                })
+
+        }
+
+        function waitingForGame() {
+            document.getElementById('container').innerHTML = '';
+
+            const divContainer = document.createElement('div');
+            divContainer.classList.add('container-loader');
+
+            const loader = document.createElement('div');
+            loader.classList.add('loader');
+
+            const h1 = document.createElement('h1');
+
+            h1.innerHTML = 'Wairing For Game';
+
+            divContainer.appendChild(loader);
+            divContainer.appendChild(h1);
+
+            document.getElementById('container').appendChild(divContainer);
+        }
+
+        function showTeammates() {
+            fetch(`${clientUrl}/participants`)
+                .then(res => res.json())
+                .then(data => {
+                    displayChampionSelectPlayers(data);
+                })
+        }
+
+        async function saveGame() {
+            return fetch(`${apiUrl}/game/save`)
+        }
+
+        function displayChampionSelectPlayers(participants) {
+
+            let participantNames = [];
+
+            participants['participants'].forEach(participant => {
+                participantNames.push({summonerName: participant.name});
+            });
+
+            fetch(`${apiUrl}/summoners/championSelect`, {
+                    method: 'POST',
+                    body: JSON.stringify(participantNames)
+                })
+                .then(response => response.json())
+                .then(data => {
+
+
+                    const participants = data.info;
+                    container.classList.add('active-game-container')
+
+                    participants.forEach(participant => {
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+                        card.classList.add('clickable');
+                        card.classList.add(`team-${participant.team_id}`);
+                        card.style.border = '1px solid black';
+                        card.style.padding = '10px';
+                        card.style.margin = '10px';
+                        const gamesContainer = document.createElement('div');
+                        gamesContainer.classList.add('game-container');
+
+
+                        const label1 = document.createElement('label');
+                        label1.textContent = `${participant.summoner_name}`;
+                        card.appendChild(label1);
+
+                        const label2 = document.createElement('label');
+                        label2.textContent = ``;
+
+                        card.appendChild(label2);
+
+                        const label3 = document.createElement('label');
+                        label3.textContent = `Games: ${participant.games_played}`;
+                        card.appendChild(label3);
+                        container.appendChild(card);
+
+                        const label4 = document.createElement('label');
+                        label4.textContent = `SHOW GAMES`;
+                        label4.classList.add('show-games');
+                        card.appendChild(label4);
+
+                        label4.addEventListener('click', () => {
+                            gamesContainer.classList.toggle('show')
+                            gamesContainer.innerHTML = '';
+                            if (gamesContainer.classList.contains('show')) {
+                                getGamesAsHTML(participant.summoner_id, gamesContainer, label4);
+                            } else {
+                                label4.classList.remove('active');
+
+                            }
+
+                        })
+                        card.appendChild(gamesContainer);
+
+                    });
+                })
+        }
 
         function fetchAndDisplayData() {
             const container = document.createElement('div');
@@ -22,7 +182,6 @@
                 .then(data => {
                     const participants = data.game.info.participants;
 
-                    console.log(participants);
                     container.classList.add('cards-container')
 
                     participants.forEach(participant => {
@@ -78,9 +237,10 @@
                             body: JSON.stringify(data)
                         });
 
-                        window.location.href='room.html';
+                        waitingForGame();
                     });
 
+                    document.getElementById('container').innerHTML = '';
                     document.getElementById('container').appendChild(submitButton);
 
                     document.getElementById('container').appendChild(container);
@@ -89,10 +249,142 @@
 
         }
 
+        let champions = [];
+
+        function getChampionById(id) {
+            for(const champion in champions.data) {
+                if (champions.data[`${champion}`].key === `${id}`) {
+                    return champions.data[`${champion}`]
+                }
+            }
+        }
+
+        fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
+            .then(response => response.json())
+            .then(data => {
+                champions = data;
+            })
 
 
+        function getGamesAsHTML(summonerId, container, label) {
+            fetch(`${apiUrl}/summoner/${summonerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(gameElement => {
+                        container.appendChild(convertToGame(gameElement.info, gameElement.metadata));
+                    })
+                    label.classList.toggle('active');
+
+                })
+        }
+
+        const fieldsToDisplay = [
+            'championName',
+            'individualPosition',
+            'summonerName',
+            'pentaKills',
+            'visionScore',
+            'wardsPlaced',
+            'comment'
+        ];
+
+        function convertToGame(info, metadata) {
+            const participant = info.participants[0];
+
+            const div = document.createElement('div');
+            div.classList.add('game');
+
+            let dateItem = document.createElement('div');
+            const date = new Date(parseInt(info.gameCreation));
+            dateItem.textContent = `Date: ${date.toDateString()} ${date.getHours()}:${date.getMinutes()}`;
+
+            let modeItem = document.createElement('div');
+            modeItem.textContent = `Mode: ${info.gameMode}`;
+
+            div.appendChild(dateItem);
+            div.appendChild(modeItem);
+
+            fieldsToDisplay.forEach(field => {
+                let gridItem = document.createElement('div');
+                gridItem.textContent = `${field}: ` + participant[`${field}`];
+
+                div.appendChild(gridItem);
+            })
+
+            let gridItem = document.createElement('div');
+            gridItem.textContent = `K/D/A: ${participant.kills} / ${participant.deaths} / ${participant.assists}`;
+
+            div.appendChild(gridItem);
+
+            const gameId = document.createElement('a');
+            gameId.setAttribute('href', `game/${metadata.matchId}`);
+            gameId.textContent = `${metadata.matchId}`;
+            div.appendChild(gameId);
+
+            return div;
+        }
+
+        function showCurrentGame() {
+            fetch(`${apiUrl}/game/active/SirDomin`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.info) {
+                        console.log('no game');
+
+                        return;
+                    }
+
+                    const participants = data.info;
+                    container.classList.add('active-game-container')
+
+                    participants.forEach(participant => {
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+                        card.classList.add('clickable');
+                        card.classList.add(`team-${participant.team_id}`);
+                        card.style.border = '1px solid black';
+                        card.style.padding = '10px';
+                        card.style.margin = '10px';
+                        const gamesContainer = document.createElement('div');
+                        gamesContainer.classList.add('game-container');
 
 
+                        const label1 = document.createElement('label');
+                        label1.textContent = `${participant.summoner_name}`;
+                        card.appendChild(label1);
+
+                        const label2 = document.createElement('label');
+                        label2.textContent = `${getChampionById(participant.champion_id).id}`;
+
+                        card.appendChild(label2);
+
+                        const label3 = document.createElement('label');
+                        label3.textContent = `Games: ${participant.games_played}`;
+                        card.appendChild(label3);
+                        container.appendChild(card);
+
+                        const label4 = document.createElement('label');
+                        label4.textContent = `SHOW GAMES`;
+                        label4.classList.add('show-games');
+                        card.appendChild(label4);
+
+                        label4.addEventListener('click', () => {
+                            gamesContainer.classList.toggle('show')
+                            gamesContainer.innerHTML = '';
+                            if (gamesContainer.classList.contains('show')) {
+                                getGamesAsHTML(participant.summoner_id, gamesContainer, label4);
+                            } else {
+                                label4.classList.remove('active');
+
+                            }
+
+                        })
+
+                        card.appendChild(gamesContainer);
+
+                    });
+                })
+        }
     </script>
 </body>
 </html>
