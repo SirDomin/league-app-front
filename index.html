@@ -8,7 +8,7 @@
 </head>
 <body>
     <div>
-        <h1 id="header"></h1>
+        <h1 class="header" id="header"></h1>
     </div>
     <div id="container">
 
@@ -52,12 +52,28 @@
             if (current === 'None' || current === 'Lobby') {
             }
 
+            if (current === 'ReadyCheck') {
+                acceptMatch();
+            }
+
+            if(current === 'None' && previous === null) {
+                waitingForGame();
+            }
+
         }
 
         const apiUrl = 'https://laptop.local';
         const clientUrl = 'http://192.168.0.104:3000';
 
         updateGameState();
+
+        function acceptMatch() {
+            fetch(`${clientUrl}/accept`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                })
+        }
 
         function updateGameState() {
             fetch(`${clientUrl}/game-state`)
@@ -87,7 +103,7 @@
 
             const h1 = document.createElement('h1');
 
-            h1.innerHTML = 'Wairing For Game';
+            h1.innerHTML = 'Waiting For Game';
 
             divContainer.appendChild(loader);
             divContainer.appendChild(h1);
@@ -96,11 +112,14 @@
         }
 
         function showTeammates() {
-            fetch(`${clientUrl}/participants`)
-                .then(res => res.json())
-                .then(data => {
-                    displayChampionSelectPlayers(data);
-                })
+            setTimeout(() => {
+                fetch(`${clientUrl}/participants`)
+                    .then(res => res.json())
+                    .then(data => {
+                        displayChampionSelectPlayers(data);
+                    })
+            }, 1000)
+
         }
 
         async function saveGame() {
@@ -108,6 +127,7 @@
         }
 
         function displayChampionSelectPlayers(participants) {
+            document.getElementById('container').innerHTML = '';
 
             let participantNames = [];
 
@@ -137,9 +157,12 @@
                         const gamesContainer = document.createElement('div');
                         gamesContainer.classList.add('game-container');
 
-
                         const label1 = document.createElement('label');
-                        label1.textContent = `${participant.summoner_name}`;
+                        const a = document.createElement('a');
+                        a.setAttribute('href', `${participant.url_opgg}`);
+                        a.innerHTML = participant.summoner_name;
+
+                        label1.appendChild(a);
                         card.appendChild(label1);
 
                         const label2 = document.createElement('label');
@@ -197,7 +220,11 @@
                         card.appendChild(label1);
 
                         const label2 = document.createElement('label');
-                        label2.textContent = `${participant.summoner_name}`;
+
+                        const a = document.createElement('a');
+                        a.setAttribute('href', participant.url_opgg);
+                        a.innerHTML = participant.summoner_name;
+                        label2.appendChild(a);
                         card.appendChild(label2);
 
                         const label3 = document.createElement('label');
@@ -215,8 +242,9 @@
                     });
 
                     const submitButton = document.createElement('button');
+                    submitButton.classList.add('save-comments');
+                    submitButton.textContent = 'Save comments';
 
-                    submitButton.textContent = 'Submit';
                     submitButton.addEventListener('click', async () => {
                         const inputs = document.querySelectorAll('input[type="text"]');
 
