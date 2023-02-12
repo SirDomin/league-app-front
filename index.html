@@ -13,6 +13,7 @@
     <div id="container">
 
     </div>
+    <script src="js/participant.js"> </script>
     <script>
         let currentGameState = null;
 
@@ -126,6 +127,98 @@
             return fetch(`${apiUrl}/game/save`)
         }
 
+        displayParticipants2([
+            {
+                team_id: 100,
+                url_opgg: 'test.url',
+                summoner_name: 'summonerName',
+                games_played: 0,
+                summoner_id: 0,
+                champion_name: null,
+                champion_id: null,
+            }
+        ]);
+
+        displayParticipants([
+            {
+                team_id: 100,
+                url_opgg: 'test.url',
+                summoner_name: 'summonerName',
+                games_played: 0,
+                summoner_id: 0,
+                champion_name: null,
+                champion_id: null,
+            }
+        ]);
+
+        function displayParticipants2(participants) {
+            container.classList.add('active-game-container')
+
+            participants.forEach(participant => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.classList.add('clickable');
+                card.classList.add(`team-${participant.team_id}`);
+                card.style.border = '1px solid black';
+                card.style.padding = '10px';
+                card.style.margin = '10px';
+                const gamesContainer = document.createElement('div');
+                gamesContainer.classList.add('game-container');
+
+
+                const label1 = document.createElement('label');
+                label1.textContent = `${participant.summoner_name}`;
+                card.appendChild(label1);
+
+                const label2 = document.createElement('label');
+                label2.textContent = `${getChampionById(participant.champion_id).id}`;
+
+                card.appendChild(label2);
+
+                const label3 = document.createElement('label');
+                label3.textContent = `Games: ${participant.games_played}`;
+                card.appendChild(label3);
+
+                const label4 = document.createElement('label');
+                label4.textContent = `SHOW GAMES`;
+                label4.classList.add('show-games');
+                card.appendChild(label4);
+
+                label4.addEventListener('click', () => {
+                    gamesContainer.classList.toggle('show')
+                    gamesContainer.innerHTML = '';
+                    if (gamesContainer.classList.contains('show')) {
+                        getGamesAsHTML(participant.summoner_id, gamesContainer, label4);
+                    } else {
+                        label4.classList.remove('active');
+
+                    }
+
+                })
+
+                card.appendChild(gamesContainer);
+                container.appendChild(card);
+
+            });
+        }
+        function displayParticipants(participants) {
+
+            container.classList.add('active-game-container')
+
+            participants.forEach(participant => {
+                container.appendChild(
+                    new Participant(
+                        participant.summoner_name,
+                        participant.games_played,
+                        participant.champion_name,
+                        participant.url_opgg,
+                        participant.team_id,
+                        participant.summoner_id
+                    )
+                );
+            });
+        }
+
         function displayChampionSelectPlayers(participants) {
             document.getElementById('container').innerHTML = '';
 
@@ -141,59 +234,9 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-
-
                     const participants = data.info;
-                    container.classList.add('active-game-container')
 
-                    participants.forEach(participant => {
-                        const card = document.createElement('div');
-                        card.classList.add('card');
-                        card.classList.add('clickable');
-                        card.classList.add(`team-${participant.team_id}`);
-                        card.style.border = '1px solid black';
-                        card.style.padding = '10px';
-                        card.style.margin = '10px';
-                        const gamesContainer = document.createElement('div');
-                        gamesContainer.classList.add('game-container');
-
-                        const label1 = document.createElement('label');
-                        const a = document.createElement('a');
-                        a.setAttribute('href', `${participant.url_opgg}`);
-                        a.innerHTML = participant.summoner_name;
-
-                        label1.appendChild(a);
-                        card.appendChild(label1);
-
-                        const label2 = document.createElement('label');
-                        label2.textContent = ``;
-
-                        card.appendChild(label2);
-
-                        const label3 = document.createElement('label');
-                        label3.textContent = `Games: ${participant.games_played}`;
-                        card.appendChild(label3);
-                        container.appendChild(card);
-
-                        const label4 = document.createElement('label');
-                        label4.textContent = `SHOW GAMES`;
-                        label4.classList.add('show-games');
-                        card.appendChild(label4);
-
-                        label4.addEventListener('click', () => {
-                            gamesContainer.classList.toggle('show')
-                            gamesContainer.innerHTML = '';
-                            if (gamesContainer.classList.contains('show')) {
-                                getGamesAsHTML(participant.summoner_id, gamesContainer, label4);
-                            } else {
-                                label4.classList.remove('active');
-
-                            }
-
-                        })
-                        card.appendChild(gamesContainer);
-
-                    });
+                    displayParticipants(participants);
                 })
         }
 
@@ -280,6 +323,9 @@
         let champions = [];
 
         function getChampionById(id) {
+            if (id === null) {
+                return 'none'
+            }
             for(const champion in champions.data) {
                 if (champions.data[`${champion}`].key === `${id}`) {
                     return champions.data[`${champion}`]
@@ -363,54 +409,8 @@
                     }
 
                     const participants = data.info;
-                    container.classList.add('active-game-container')
+                    displayParticipants2(participants)
 
-                    participants.forEach(participant => {
-                        const card = document.createElement('div');
-                        card.classList.add('card');
-                        card.classList.add('clickable');
-                        card.classList.add(`team-${participant.team_id}`);
-                        card.style.border = '1px solid black';
-                        card.style.padding = '10px';
-                        card.style.margin = '10px';
-                        const gamesContainer = document.createElement('div');
-                        gamesContainer.classList.add('game-container');
-
-
-                        const label1 = document.createElement('label');
-                        label1.textContent = `${participant.summoner_name}`;
-                        card.appendChild(label1);
-
-                        const label2 = document.createElement('label');
-                        label2.textContent = `${getChampionById(participant.champion_id).id}`;
-
-                        card.appendChild(label2);
-
-                        const label3 = document.createElement('label');
-                        label3.textContent = `Games: ${participant.games_played}`;
-                        card.appendChild(label3);
-                        container.appendChild(card);
-
-                        const label4 = document.createElement('label');
-                        label4.textContent = `SHOW GAMES`;
-                        label4.classList.add('show-games');
-                        card.appendChild(label4);
-
-                        label4.addEventListener('click', () => {
-                            gamesContainer.classList.toggle('show')
-                            gamesContainer.innerHTML = '';
-                            if (gamesContainer.classList.contains('show')) {
-                                getGamesAsHTML(participant.summoner_id, gamesContainer, label4);
-                            } else {
-                                label4.classList.remove('active');
-
-                            }
-
-                        })
-
-                        card.appendChild(gamesContainer);
-
-                    });
                 })
         }
     </script>
