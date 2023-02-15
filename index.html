@@ -13,7 +13,17 @@
     <div id="container">
 
     </div>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="header"><p id="game-info"></p><span class="close">&times;</span></div>
+            <div id="container-modal">
+
+            </div>
+        </div>
+    </div>
     <script src="js/participant.js"> </script>
+    <script src="js/game.js"> </script>
     <script>
         let currentGameState = null;
 
@@ -57,14 +67,14 @@
                 acceptMatch();
             }
 
-            if(current === 'None' && previous === null) {
+            if((current === 'None' || current === 'Lobby') && previous === null) {
                 waitingForGame();
             }
 
         }
 
         const apiUrl = 'https://laptop.local';
-        const clientUrl = 'http://192.168.0.104:3000';
+        const clientUrl = 'http://192.168.0.106:3000';
 
         updateGameState();
 
@@ -72,7 +82,7 @@
             fetch(`${clientUrl}/accept`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
+                    console.log('Game accepted');
                 })
         }
 
@@ -127,94 +137,27 @@
             return fetch(`${apiUrl}/game/save`)
         }
 
-        displayParticipants2([
-            {
-                team_id: 100,
-                url_opgg: 'test.url',
-                summoner_name: 'summonerName',
-                games_played: 0,
-                summoner_id: 0,
-                champion_name: null,
-                champion_id: null,
-            }
-        ]);
-
-        displayParticipants([
-            {
-                team_id: 100,
-                url_opgg: 'test.url',
-                summoner_name: 'summonerName',
-                games_played: 0,
-                summoner_id: 0,
-                champion_name: null,
-                champion_id: null,
-            }
-        ]);
-
-        function displayParticipants2(participants) {
-            container.classList.add('active-game-container')
-
-            participants.forEach(participant => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.classList.add('clickable');
-                card.classList.add(`team-${participant.team_id}`);
-                card.style.border = '1px solid black';
-                card.style.padding = '10px';
-                card.style.margin = '10px';
-                const gamesContainer = document.createElement('div');
-                gamesContainer.classList.add('game-container');
-
-
-                const label1 = document.createElement('label');
-                label1.textContent = `${participant.summoner_name}`;
-                card.appendChild(label1);
-
-                const label2 = document.createElement('label');
-                label2.textContent = `${getChampionById(participant.champion_id).id}`;
-
-                card.appendChild(label2);
-
-                const label3 = document.createElement('label');
-                label3.textContent = `Games: ${participant.games_played}`;
-                card.appendChild(label3);
-
-                const label4 = document.createElement('label');
-                label4.textContent = `SHOW GAMES`;
-                label4.classList.add('show-games');
-                card.appendChild(label4);
-
-                label4.addEventListener('click', () => {
-                    gamesContainer.classList.toggle('show')
-                    gamesContainer.innerHTML = '';
-                    if (gamesContainer.classList.contains('show')) {
-                        getGamesAsHTML(participant.summoner_id, gamesContainer, label4);
-                    } else {
-                        label4.classList.remove('active');
-
-                    }
-
-                })
-
-                card.appendChild(gamesContainer);
-                container.appendChild(card);
-
-            });
-        }
         function displayParticipants(participants) {
-
             container.classList.add('active-game-container')
 
             participants.forEach(participant => {
+                let championName;
+
+                if (!participant.champion_id) {
+                    championName = '';
+                } else {
+                   championName = participant.champion_name ? participant.champion_name : getChampionById(participant.champion_id).id
+                }
+
                 container.appendChild(
-                    new Participant(
+                    (new Participant(
                         participant.summoner_name,
                         participant.games_played,
-                        participant.champion_name,
+                        championName,
                         participant.url_opgg,
                         participant.team_id,
                         participant.summoner_id
-                    )
+                    )).getCard()
                 );
             });
         }
@@ -251,37 +194,24 @@
                     container.classList.add('cards-container')
 
                     participants.forEach(participant => {
-                        const card = document.createElement('div');
-                        card.classList.add('card');
-                        card.classList.add(`team-${participant.team_id}`);
-                        card.style.border = '1px solid black';
-                        card.style.padding = '10px';
-                        card.style.margin = '10px';
+                        if (!participant.champion_id) {
+                            championName = '';
+                        } else {
+                            championName = participant.champion_name ? participant.champion_name : getChampionById(participant.champion_id).id
+                        }
 
-                        const label1 = document.createElement('label');
-                        label1.textContent = `${participant.champion_name}`;
-                        card.appendChild(label1);
-
-                        const label2 = document.createElement('label');
-
-                        const a = document.createElement('a');
-                        a.setAttribute('href', participant.url_opgg);
-                        a.innerHTML = participant.summoner_name;
-                        label2.appendChild(a);
-                        card.appendChild(label2);
-
-                        const label3 = document.createElement('label');
-                        label3.textContent = `Comment:`;
-                        card.appendChild(label3);
-
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.name = 'comment';
-                        input.value = `${participant.comment}`;
-                        input.setAttribute('data-id', participant.id);
-                        card.appendChild(input);
-
-                        container.appendChild(card);
+                        container.appendChild(
+                            (new Participant(
+                                participant.summoner_name,
+                                participant.games_played,
+                                championName,
+                                participant.url_opgg,
+                                participant.team_id,
+                                participant.summoner_id,
+                                participant.id,
+                                participant.comment,
+                            )).getCommentCard()
+                        );
                     });
 
                     const submitButton = document.createElement('button');
@@ -345,7 +275,9 @@
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(gameElement => {
-                        container.appendChild(convertToGame(gameElement.info, gameElement.metadata));
+                        container.appendChild(
+                            (new Game(gameElement.info, gameElement.metadata)).getGameCard()
+                        );
                     })
                     label.classList.toggle('active');
 
@@ -362,42 +294,6 @@
             'comment'
         ];
 
-        function convertToGame(info, metadata) {
-            const participant = info.participants[0];
-
-            const div = document.createElement('div');
-            div.classList.add('game');
-
-            let dateItem = document.createElement('div');
-            const date = new Date(parseInt(info.gameCreation));
-            dateItem.textContent = `Date: ${date.toDateString()} ${date.getHours()}:${date.getMinutes()}`;
-
-            let modeItem = document.createElement('div');
-            modeItem.textContent = `Mode: ${info.gameMode}`;
-
-            div.appendChild(dateItem);
-            div.appendChild(modeItem);
-
-            fieldsToDisplay.forEach(field => {
-                let gridItem = document.createElement('div');
-                gridItem.textContent = `${field}: ` + participant[`${field}`];
-
-                div.appendChild(gridItem);
-            })
-
-            let gridItem = document.createElement('div');
-            gridItem.textContent = `K/D/A: ${participant.kills} / ${participant.deaths} / ${participant.assists}`;
-
-            div.appendChild(gridItem);
-
-            const gameId = document.createElement('a');
-            gameId.setAttribute('href', `game/${metadata.matchId}`);
-            gameId.textContent = `${metadata.matchId}`;
-            div.appendChild(gameId);
-
-            return div;
-        }
-
         function showCurrentGame() {
             fetch(`${apiUrl}/game/active/SirDomin`)
                 .then(response => response.json())
@@ -409,10 +305,47 @@
                     }
 
                     const participants = data.info;
-                    displayParticipants2(participants)
+                    displayParticipants(participants)
 
                 })
         }
+
+        var modal = document.getElementById("myModal");
+        var span = document.getElementsByClassName("close")[0];
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function showGame(gameId) {
+            const modalContainer = document.getElementById('container-modal');
+            modalContainer.innerHTML = '';
+
+            fetch(`${apiUrl}/game/by-puuid/${gameId}`)
+                .then(res => res.json())
+                .then(data => {
+                    modal.style.display = "flex";
+                    const date = new Date(parseInt(data.info.game_creation));
+                    const formattedDate = date.toISOString().slice(0, 16).replace('T', ' ');
+
+                    const winningTeam = data.info.teams[0].win ? 'Blue Team' : 'Red Team';
+
+                    const headerInfo = document.getElementById('game-info');
+                    headerInfo.innerHTML = `GAME: ${gameId} | ${formattedDate} | ( Duration ${fmtMSS(data.info.game_duration)} ) win: ${winningTeam} | MODE: ${data.info.game_mode}-${data.info.game_type}`
+                    data.info.participants.forEach(participant => {
+                        modalContainer.appendChild(
+                            (new Participant()).getDetailedCard(participant)
+                        );
+                    })
+                })
+        }
+        function fmtMSS(s){return(s-(s%=60))/60+(9<s?':':':0')+s}
     </script>
 </body>
 </html>
