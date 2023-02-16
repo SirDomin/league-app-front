@@ -24,8 +24,62 @@
     </div>
     <script src="js/participant.js"> </script>
     <script src="js/game.js"> </script>
+    <script src="js/stateDecider.js"> </script>
+    <script src="js/apiManager.js"> </script>
+    <script src="js/mocker.js"> </script>
     <script>
+        const stateDecider = new StateDecider();
+        const mocker = new Mocker();
+        const apiManager = new ApiManager(mocker);
+        stateDecider.onStateChange(StateDecider.ANY, StateDecider.END_OF_GAME, () => {
+            apiManager.saveGame()
+                .then(data => {
+                    document.getElementById('header').innerHTML = 'Game Saved';
+
+                    showPreviousGame();
+                })
+
+            document.getElementById('header').innerHTML = 'End of Game';
+        });
+
+
+        stateDecider.onStateChange(StateDecider.ANY, StateDecider.CHAMPION_SELECT, () => {
+            showTeammates();
+
+            document.getElementById('header').innerHTML = 'Champion Select';
+        });
+
+        stateDecider.onStateChange(StateDecider.ANY, StateDecider.IN_PROGRESS, () => {
+            document.getElementById('container').innerHTML = '';
+            document.getElementById('header').innerHTML = 'Game In progress';
+
+            showCurrentGame();
+        });
+
+        stateDecider.onStateChange(StateDecider.NONE, StateDecider.MATCHMAKING, () => {})
+        stateDecider.onStateChange(StateDecider.MATCHMAKING, StateDecider.READY_CHECK, () => {})
+        stateDecider.onStateChange(StateDecider.READY_CHECK, StateDecider.IN_PROGRESS, () => {})
+        stateDecider.onStateChange(StateDecider.IN_PROGRESS, StateDecider.PRE_END_OF_GAME, () => {})
+        stateDecider.onStateChange(StateDecider.PRE_END_OF_GAME, StateDecider.END_OF_GAME, () => {})
+
+        stateDecider.onStateChange(StateDecider.ANY, StateDecider.READY_CHECK, () => {
+            apiManager.acceptMatch().then(data => {
+                console.log('Match accepted');
+            });
+
+            document.getElementById('header').innerHTML = 'Accepting Match';
+        });
+
+        stateDecider.onStateChange([null, StateDecider.END_OF_GAME], [StateDecider.NONE, StateDecider.LOBBY, StateDecider.MATCHMAKING], () => {
+            document.getElementById('header').innerHTML = 'Waiting for game to start';
+
+            waitingForGame();
+        });
+
+        console.log(stateDecider.handlers);
         let currentGameState = null;
+
+        stateDecider.stateChanged(StateDecider.NONE)
 
         availableStates = {
             'None': 'Main Menu',
@@ -39,69 +93,7 @@
             'EndOfGame': 'End Of Game',
         };
 
-        function stateChanged(previous, current) {
-            document.getElementById('header').innerHTML = availableStates[current];
-            console.log('State change: ',previous, '=>', current);
-            if(current === 'EndOfGame') {
-                saveGame()
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('header').innerHTML = 'Game Saved';
-
-                        fetchAndDisplayData();
-                    })
-            }
-            if (current === 'ChampSelect') {
-                showTeammates();
-            }
-
-            if (current === 'InProgress') {
-                document.getElementById('container').innerHTML = '';
-                showCurrentGame();
-            }
-
-            if (current === 'None' || current === 'Lobby') {
-            }
-
-            if (current === 'ReadyCheck') {
-                acceptMatch();
-            }
-
-            if((current === 'None' || current === 'Lobby') && previous === null) {
-                waitingForGame();
-            }
-
-        }
-
-        const apiUrl = 'https://laptop.local';
-        const clientUrl = 'http://192.168.0.106:3000';
-
-        updateGameState();
-
-        function acceptMatch() {
-            fetch(`${clientUrl}/accept`)
-                .then(res => res.json())
-                .then(data => {
-                    console.log('Game accepted');
-                })
-        }
-
-        function updateGameState() {
-            fetch(`${clientUrl}/game-state`)
-                .then(res => res.json())
-                .then(data => {
-
-                    if (currentGameState !== data.game_state) {
-                        stateChanged(currentGameState, data.game_state);
-                        currentGameState = data.game_state;
-                    }
-
-                    setTimeout(() => {
-                        updateGameState();
-                    }, 2000)
-                })
-
-        }
+        // updateGameState();
 
         function waitingForGame() {
             document.getElementById('container').innerHTML = '';
@@ -124,17 +116,10 @@
 
         function showTeammates() {
             setTimeout(() => {
-                fetch(`${clientUrl}/participants`)
-                    .then(res => res.json())
-                    .then(data => {
-                        displayChampionSelectPlayers(data);
-                    })
-            }, 1000)
-
-        }
-
-        async function saveGame() {
-            return fetch(`${apiUrl}/game/save`)
+                this.apiManager.getChampionSelectPlayers().then(data => {
+                    displayChampionSelectPlayers(data);
+                })
+            }, 3000)
         }
 
         function displayParticipants(participants) {
@@ -171,11 +156,7 @@
                 participantNames.push({summonerName: participant.name});
             });
 
-            fetch(`${apiUrl}/summoners/championSelect`, {
-                    method: 'POST',
-                    body: JSON.stringify(participantNames)
-                })
-                .then(response => response.json())
+            apiManager.getChampionSelectData(participantNames)
                 .then(data => {
                     const participants = data.info;
 
@@ -183,11 +164,10 @@
                 })
         }
 
-        function fetchAndDisplayData() {
+        function showPreviousGame() {
             const container = document.createElement('div');
 
-            fetch(`${apiUrl}/game/last`)
-                .then(response => response.json())
+            this.apiManager.getLastGameData()
                 .then(data => {
                     const participants = data.game.info.participants;
 
@@ -229,14 +209,7 @@
                             })
                         }
 
-                        const response = await fetch(`${apiUrl}/game/save-result`, {
-                            method: 'POST',
-                            mode: 'no-cors', // no-cors, *cors, same-origin
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(data)
-                        });
+                        await apiManager.saveGameData(data);
 
                         waitingForGame();
                     });
@@ -263,16 +236,13 @@
             }
         }
 
-        fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
-            .then(response => response.json())
-            .then(data => {
-                champions = data;
-            })
-
+        apiManager.getChampions().then(data => {
+            champions = data;
+            console.log(champions);
+        })
 
         function getGamesAsHTML(summonerId, container, label) {
-            fetch(`${apiUrl}/summoner/${summonerId}`)
-                .then(response => response.json())
+            this.apiManager.getSummoner(summonerId)
                 .then(data => {
                     data.forEach(gameElement => {
                         container.appendChild(
@@ -280,7 +250,6 @@
                         );
                     })
                     label.classList.toggle('active');
-
                 })
         }
 
@@ -295,8 +264,7 @@
         ];
 
         function showCurrentGame() {
-            fetch(`${apiUrl}/game/active/SirDomin`)
-                .then(response => response.json())
+            this.apiManager.getActiveGame('SirDomin')
                 .then(data => {
                     if (!data.info) {
                         console.log('no game');
@@ -327,8 +295,7 @@
             const modalContainer = document.getElementById('container-modal');
             modalContainer.innerHTML = '';
 
-            fetch(`${apiUrl}/game/by-puuid/${gameId}`)
-                .then(res => res.json())
+            apiManager.getGameByPuuId(gameId)
                 .then(data => {
                     modal.style.display = "flex";
                     const date = new Date(parseInt(data.info.game_creation));
