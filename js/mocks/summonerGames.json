@@ -1,0 +1,25 @@
+[
+  {
+    "info": {
+      "gameCreation": "1676669268672",
+      "gameMode": "MODE",
+      "participants": [
+        {
+          "championName": "Champion1",
+          "individualPosition":  "Position",
+          "summonerName":  "SummonerName",
+          "pentaKills":  1,
+          "visionScore":  49,
+          "wardsPlaced":  3,
+          "comment": "Test Comment",
+          "kills": 3,
+          "deaths": 4,
+          "assists": 0
+        }
+      ]
+    },
+    "metadata": {
+      "matchId": "MatchID"
+    }
+  }
+]

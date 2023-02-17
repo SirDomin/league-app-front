@@ -10,10 +10,15 @@ class StateDecider {
     static END_OF_GAME = 'EndOfGame';
     static ANY = 'Any';
 
+    #refreshRate;
+
     constructor(apiManager) {
         this.apiManager = apiManager;
         this.gameState = null;
         this.handlers = [];
+        this.#refreshRate = 1000;
+
+        this.updateGameState();
     }
 
     updateGameState() {
@@ -25,7 +30,7 @@ class StateDecider {
 
             setTimeout(() => {
                 this.updateGameState();
-            }, 2000)
+            }, this.#refreshRate)
         });
     }
 

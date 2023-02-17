@@ -28,9 +28,10 @@
     <script src="js/apiManager.js"> </script>
     <script src="js/mocker.js"> </script>
     <script>
-        const stateDecider = new StateDecider();
         const mocker = new Mocker();
         const apiManager = new ApiManager(mocker);
+        const stateDecider = new StateDecider(apiManager);
+
         stateDecider.onStateChange(StateDecider.ANY, StateDecider.END_OF_GAME, () => {
             apiManager.saveGame()
                 .then(data => {
@@ -116,7 +117,7 @@
 
         function showTeammates() {
             setTimeout(() => {
-                this.apiManager.getChampionSelectPlayers().then(data => {
+                apiManager.getChampionSelectPlayers().then(data => {
                     displayChampionSelectPlayers(data);
                 })
             }, 3000)
@@ -242,8 +243,9 @@
         })
 
         function getGamesAsHTML(summonerId, container, label) {
-            this.apiManager.getSummoner(summonerId)
+            apiManager.getSummoner(summonerId)
                 .then(data => {
+                    console.log(data);
                     data.forEach(gameElement => {
                         container.appendChild(
                             (new Game(gameElement.info, gameElement.metadata)).getGameCard()
@@ -252,16 +254,6 @@
                     label.classList.toggle('active');
                 })
         }
-
-        const fieldsToDisplay = [
-            'championName',
-            'individualPosition',
-            'summonerName',
-            'pentaKills',
-            'visionScore',
-            'wardsPlaced',
-            'comment'
-        ];
 
         function showCurrentGame() {
             this.apiManager.getActiveGame('SirDomin')

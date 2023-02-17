@@ -1,0 +1,49 @@
+{
+  "info": [
+    {
+      "champion_id": 120,
+      "champion_name": "Volibear",
+      "summoner_name": "Summoner1",
+      "url_opgg": "https://www.op.gg/summoners/eune/SirDomin",
+      "team_id": null,
+      "summoner_id": 300,
+      "games_played": 10
+    },
+    {
+      "champion_id": 121,
+      "champion_name": "Nasus",
+      "summoner_name": "Summoner2",
+      "url_opgg": "https://www.op.gg/summoners/eune/SirDomin",
+      "team_id": null,
+      "summoner_id": 300,
+      "games_played": 1
+    },
+    {
+      "champion_id": 120,
+      "champion_name": "Aattrox",
+      "summoner_name": "Summoner3",
+      "url_opgg": "https://www.op.gg/summoners/eune/SirDomin",
+      "team_id": null,
+      "games_played": 0,
+      "summoner_id": 300
+    },
+    {
+      "champion_id": 120,
+      "champion_name": "Nami",
+      "summoner_name": "Summoner4",
+      "url_opgg": "https://www.op.gg/summoners/eune/SirDomin",
+      "team_id": null,
+      "games_played": 3,
+      "summoner_id": 300
+    },
+    {
+      "champion_id": 120,
+      "champion_name": "Varus",
+      "summoner_name": "Summoner5",
+      "url_opgg": "https://www.op.gg/summoners/eune/SirDomin",
+      "team_id": null,
+      "games_played": 1,
+      "summoner_id": 300
+    }
+  ]
+}

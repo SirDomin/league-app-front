@@ -9,19 +9,18 @@ class ApiManager {
 
     async createRequest(url, data = {}) {
         if (this.mocker) {
-
             return this.mocker.getMock(url);
         }
 
-        return fetch(url, data);
+        return fetch(url, data)
+            .then(res => res.json());
     }
     async clientCall(url) {
         return this.createRequest(`${this.clientUrl}/${url}`)
     }
 
     async apiCall(url, data = {}) {
-        return this.createRequest(`${apiUrl}/${url}`, data)
-
+        return this.createRequest(`${this.apiUrl}/${url}`, data)
     }
 
     async riotCall() {
@@ -30,22 +29,18 @@ class ApiManager {
 
     async acceptMatch() {
         return this.clientCall('accept')
-            .then(res => res.json())
     }
 
     async getGameState() {
         return this.clientCall('game-state')
-            .then(res => res.json())
     }
 
     async getChampionSelectPlayers() {
        return this.clientCall('participants')
-            .then(res => res.json())
     }
 
     async saveGame() {
         return this.apiCall('game/save')
-            .then(res => res.json())
     }
 
     async getChampionSelectData(participants) {
@@ -53,12 +48,10 @@ class ApiManager {
                 method: 'POST',
                 body: JSON.stringify(participants)
             })
-            .then(res => res.json())
     }
 
     getLastGameData() {
         return this.apiCall('game/last')
-            .then(res => res.json())
     }
 
     saveGameData(data) {
@@ -70,7 +63,6 @@ class ApiManager {
             },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
     }
 
     async getChampions() {
@@ -79,16 +71,13 @@ class ApiManager {
 
     async getSummoner(summonerId) {
         return this.apiCall(`summoner/${summonerId}`)
-            .then(res => res.json())
     }
 
     async getActiveGame(summonerName) {
         return this.apiCall(`game/active/${summonerName}`)
-            .then(res => res.json())
     }
 
     async getGameByPuuId(puuId) {
         return this.apiCall(`game/by-puuid/${puuId}`)
-            .then(res => res.json())
     }
 }
