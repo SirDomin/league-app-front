@@ -7,6 +7,16 @@ class Game {
     getGameCard() {
         const participant = this.info.participants[0];
 
+        const fieldsToDisplay = [
+            'championName',
+            'individualPosition',
+            'summonerName',
+            'pentaKills',
+            'visionScore',
+            'wardsPlaced',
+            'comment'
+        ];
+
         const div = document.createElement('div');
         div.classList.add('game');
 
