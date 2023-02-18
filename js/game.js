@@ -47,7 +47,7 @@ class Game {
         gameId.setAttribute('href', `game/${this.metadata.matchId}`);
         gameId.textContent = `${this.metadata.matchId}`;
         gameId.addEventListener('click', () => {
-            showGame(this.metadata.matchId);
+            contentManager.showGame(this.metadata.matchId);
         });
         div.appendChild(gameId);
 

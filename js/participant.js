@@ -47,7 +47,7 @@ class Participant {
             gamesContainer.classList.toggle('show')
             gamesContainer.innerHTML = '';
             if (gamesContainer.classList.contains('show')) {
-                getGamesAsHTML(this.summonerId, gamesContainer, label4);
+                contentManager.getGamesAsHTML(this.summonerId, gamesContainer, label4);
             } else {
                 label4.classList.remove('active');
 
