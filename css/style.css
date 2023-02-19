@@ -1,17 +1,44 @@
+body {
+    background: #deeaee;
+    font-family: 'Poppins', sans-serif;
+
+}
+
 .card {
+    border-radius: 10px;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, auto);
 }
 .team-100 {
-    background: #0051ff;
+    color: #b1cbbb;
+    background: #034f84;
 }
+
+.team-100 label a {
+    color: #b1cbbb;
+}
+
+.team-200 label a {
+    color: black;
+}
+
 .team-200 {
-    background: #d50707;
+    color: black;
+    background: #c94c4c;
+}
+
+label a{
+    color: black;
+}
+
+.card textarea {
+    height: 3vh;
+    resize: none;
 }
 
 .team-unknown {
-    background: #7e817f;
+    background: #b1cbbb;
 }
 .cards-container {
     display: grid;
@@ -26,11 +53,13 @@
 .active-game-container .card {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: minmax(0, 20px) 1fr;
+    grid-template-rows: minmax(0, 30px) 1fr;
 }
 
 .show-games {
     cursor:pointer;
+    border-radius: 10px 10px 0 0;
+    user-select: none;
 }
 
 .show-games.active {
@@ -38,12 +67,18 @@
 }
 
 .active-game-container label {
-    height: 20px;
+    height: 30px;
 }
 .game-container{
-    background: red;
     grid-column: 1 / 5;
     height: 0;
+}
+
+.small-button-container-grid {
+    grid-column: 1 / 3;
+    display: flex;
+    justify-content: center;
+    padding-top: 5px;
 }
 
 .show {
@@ -54,6 +89,7 @@
 }
 
 .game {
+    border-radius: 10px 10px 10px 10px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     padding: 10px;
@@ -62,9 +98,15 @@
     align-content: center;
     margin-bottom: 2px;
 }
+
+.game:nth-child(1) {
+    border-radius: 10px 0 10px 10px;
+
+}
+
 .loader {
     border: 16px solid #f3f3f3;
-    border-top: 16px solid #3498db;
+    border-top: 16px solid #034f84;
     border-radius: 50%;
     width: 120px;
     height: 120px;
@@ -85,9 +127,9 @@
 }
 
 /* CSS */
-.save-comments {
-   background-image: linear-gradient(92.88deg, #0059c3 9.16%, #7e817f 43.89%, #7e817f 64.72%);
-   border-radius: 8px;
+.button-default {
+    background: rgb(3, 156, 100);
+    border-radius: 8px;
    border-style: none;
    box-sizing: border-box;
    color: #FFFFFF;
@@ -106,13 +148,17 @@
    touch-action: manipulation;
 }
 
-.save-comments:hover {
-    box-shadow: #0059c3 0 1px 30px;
+.button-default.small {
+    height: 2rem;
+}
+
+.button-default:hover {
+    box-shadow: rgb(3, 156, 100) 0 1px 30px;
     transition-duration: .1s;
 }
 
 @media (min-width: 768px) {
-    .save-comments {
+    .button-default {
         padding: 0 2.6rem;
     }
 }
@@ -125,30 +171,31 @@
 
 .detailed-card {
     display: grid;
-    padding: 2px;
     border: solid 1px black;
+    grid-gap: 4px;
+    padding: 4px;
 }
 
-.detailed-card.team-100 {
+.detailed-card.team-100, .card.team-100{
     grid-column: 1;
 }
-.detailed-card.team-200 {
+.detailed-card.team-200, .card.team-200{
     grid-column: 2;
 }
 
-.detailed-card:nth-child(6) {
+.detailed-card:nth-child(6), .card:nth-child(6) {
     grid-row: 1
 }
-.detailed-card:nth-child(7) {
+.detailed-card:nth-child(7), .card:nth-child(7) {
     grid-row: 2
 }
-.detailed-card:nth-child(8) {
+.detailed-card:nth-child(8), .card:nth-child(8) {
     grid-row: 3
 }
-.detailed-card:nth-child(9) {
+.detailed-card:nth-child(9), .card:nth-child(9) {
     grid-row: 4
 }
-.detailed-card:nth-child(10) {
+.detailed-card:nth-child(10), .card:nth-child(10) {
     grid-row: 5
 }
 #container-modal {
@@ -204,4 +251,15 @@
 
 .game-show {
     cursor: pointer;
+}
+
+.submit-button-center {
+    display: flex;
+    justify-content: center;
+}
+
+.card label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

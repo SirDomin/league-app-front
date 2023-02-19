@@ -30,6 +30,26 @@ class Mocker {
                 url: 'https://laptop.local/game/by-puuid/MatchID',
                 body: {},
                 json: '/league-app-front/js/mocks/match.json'
+            },
+            {
+                url: 'https://laptop.local/game/save',
+                body: {},
+                json: '/league-app-front/js/mocks/save.json'
+            },
+            {
+                url: 'https://laptop.local/game/last',
+                body: {},
+                json: '/league-app-front/js/mocks/last.json'
+            },
+            {
+                url: 'https://laptop.local/game/save-result',
+                body: {},
+                json: '/league-app-front/js/mocks/last.json'
+            },
+            {
+                url: 'https://laptop.local/game/active/SirDomin',
+                body: {},
+                json: '/league-app-front/js/mocks/active.json'
             }
         ];
     }

@@ -42,14 +42,17 @@ class Game {
 
         div.appendChild(gridItem);
 
-        const gameId = document.createElement('label');
-        gameId.classList.add('game-show');
-        gameId.setAttribute('href', `game/${this.metadata.matchId}`);
-        gameId.textContent = `${this.metadata.matchId}`;
+        const labelRedirect = document.createElement('div');
+        labelRedirect.classList.add('small-button-container-grid');
+        const gameId = document.createElement('button');
+        gameId.classList.add('button-default');
+        gameId.classList.add('small');
+        gameId.textContent = `Display ( ${this.metadata.matchId} )`;
         gameId.addEventListener('click', () => {
             contentManager.showGame(this.metadata.matchId);
         });
-        div.appendChild(gameId);
+        labelRedirect.appendChild(gameId);
+        div.appendChild(labelRedirect);
 
         return div;
     }
