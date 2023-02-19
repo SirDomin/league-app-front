@@ -29,6 +29,7 @@
       "map_id": 11,
       "participants": [
         {
+          "id": 1,
           "all_in_pings": 0,
           "comment": "Test Comment",
           "assist_me_pings": 0,
@@ -328,6 +329,7 @@
           "win": true
         },
         {
+          "id": 2,
           "all_in_pings": 1,
           "assist_me_pings": 10,
           "assists": 12,
@@ -628,6 +630,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 3,
           "comment": "Test Comment",
           "assist_me_pings": 1,
           "assists": 13,
@@ -927,6 +930,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 4,
           "comment": "Test Comment",
           "assist_me_pings": 8,
           "assists": 4,
@@ -1224,6 +1228,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 5,
           "comment": "Test Comment",
           "assist_me_pings": 0,
           "assists": 12,
@@ -1523,6 +1528,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 6,
           "comment": "Test Comment",
           "assist_me_pings": 0,
           "assists": 2,
@@ -1817,6 +1823,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 7,
           "comment": "Test Comment",
           "assist_me_pings": 2,
           "assists": 7,
@@ -2110,6 +2117,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 8,
           "comment": "Test Comment",
           "assist_me_pings": 4,
           "assists": 2,
@@ -2403,6 +2411,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 9,
           "comment": "Test Comment",
           "assist_me_pings": 0,
           "assists": 3,
@@ -2696,6 +2705,7 @@
         },
         {
           "all_in_pings": 0,
+          "id": 10,
           "comment": "Test Comment",
           "assist_me_pings": 1,
           "assists": 5,

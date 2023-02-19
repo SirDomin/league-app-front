@@ -53,12 +53,15 @@ class ContentManager {
                     );
                 });
 
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('submit-button-center');
+
                 const submitButton = document.createElement('button');
-                submitButton.classList.add('save-comments');
+                submitButton.classList.add('button-default');
                 submitButton.textContent = 'Save comments';
 
                 submitButton.addEventListener('click', async () => {
-                    const inputs = document.querySelectorAll('input[type="text"]');
+                    const inputs = document.querySelectorAll('textarea');
 
                     const data = [];
                     for (const input of inputs) {
@@ -74,7 +77,8 @@ class ContentManager {
                 });
 
                 document.getElementById('container').innerHTML = '';
-                document.getElementById('container').appendChild(submitButton);
+                buttonContainer.appendChild(submitButton);
+                document.getElementById('container').appendChild(buttonContainer);
 
                 document.getElementById('container').appendChild(container);
             });
@@ -172,7 +176,6 @@ class ContentManager {
     getGamesAsHTML(summonerId, container, label) {
         apiManager.getSummoner(summonerId)
             .then(data => {
-                console.log(data);
                 data.forEach(gameElement => {
                     container.appendChild(
                         (new Game(gameElement.info, gameElement.metadata)).getGameCard()

@@ -14,7 +14,7 @@ class Participant {
         const card = document.createElement('div');
         card.classList.add('card');
         card.classList.add('clickable');
-        card.classList.add(`team-${this.teamId}`);
+        card.classList.add(`team-${this.teamId ? this.teamId : 'unknown'}`);
         card.style.border = '1px solid black';
         card.style.padding = '10px';
         card.style.margin = '10px';
@@ -83,8 +83,7 @@ class Participant {
         label3.textContent = `Comment:`;
         card.appendChild(label3);
 
-        const input = document.createElement('input');
-        input.type = 'text';
+        const input = document.createElement('textarea');
         input.name = 'comment';
         input.value = `${this.comment}`;
         input.setAttribute('data-id', this.id);
