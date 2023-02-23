@@ -1,7 +1,15 @@
 body {
     background: #deeaee;
     font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+}
 
+html {
+    margin: 0
 }
 
 .card {
@@ -104,6 +112,12 @@ label a{
 
 }
 
+.previous-game-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+
 .loader {
     border: 16px solid #f3f3f3;
     border-top: 16px solid #034f84;
@@ -146,6 +160,9 @@ label a{
    user-select: none;
    -webkit-user-select: none;
    touch-action: manipulation;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .button-default.small {
@@ -262,4 +279,16 @@ label a{
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.header-container {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+}
+
+.header-button-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 10px;
+    padding: 10px;
 }

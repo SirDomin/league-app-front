@@ -9,6 +9,7 @@ class StateDecider {
     static PRE_END_OF_GAME = 'PreEndOfGame';
     static END_OF_GAME = 'EndOfGame';
     static ANY = 'Any';
+    static FORCED = 'Forced';
 
     #refreshRate;
 
@@ -17,15 +18,20 @@ class StateDecider {
         this.gameState = null;
         this.handlers = [];
         this.#refreshRate = 1000;
-
+        this.forced = false;
         this.updateGameState();
     }
 
     updateGameState() {
         this.apiManager.getGameState().then(data => {
-            if (this.gameState !== data.game_state) {
-                this.stateChanged(data.game_state);
-                this.gameState = data.game_state;
+            if (data !== null) {
+                if (this.forced === true) {
+                    return;
+                }
+                if (this.gameState !== data.game_state) {
+                    this.gameState = data.game_state;
+                    this.stateChanged(data.game_state);
+                }
             }
 
             setTimeout(() => {
@@ -79,6 +85,13 @@ class StateDecider {
             newState: newState,
             callback: callback,
         });
+    }
+
+    forceState() {
+        if (this.forced) {
+            this.stateChanged(this.gameState);
+        }
+        this.forced = !this.forced;
     }
 
     stateChanged(newGameState) {

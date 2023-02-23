@@ -22,6 +22,8 @@ class ContentManager {
     }
 
     showPreviousGame() {
+        document.getElementById('container').classList.remove('active-game-container');
+
         const container = document.createElement('div');
 
         apiManager.getLastGameData()
@@ -71,9 +73,11 @@ class ContentManager {
                         })
                     }
 
-                    await apiManager.saveGameData(data);
-
-                    this.displayWaitingForGame();
+                    apiManager.saveGameData(data)
+                        .then(data => {
+                            stateDecider.forced = false;
+                            this.displayWaitingForGame();
+                        })
                 });
 
                 document.getElementById('container').innerHTML = '';

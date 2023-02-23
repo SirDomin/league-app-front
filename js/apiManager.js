@@ -1,14 +1,15 @@
 class ApiManager {
     apiUrl = 'https://laptop.local';
-    clientUrl = 'http://192.168.0.106:3000';
+    clientUrl = 'http://192.168.0.104:3000';
 
     mocker;
-    constructor(mocker = null) {
+    constructor(mocker, mockValues = false) {
         this.mocker = mocker;
+        this.mockValues = mockValues;
     }
 
     async createRequest(url, data = {}) {
-        if (this.mocker) {
+        if (this.mockValues === true) {
             return this.mocker.getMock(url);
         }
 
@@ -16,7 +17,14 @@ class ApiManager {
             .then(res => res.json());
     }
     async clientCall(url) {
-        return this.createRequest(`${this.clientUrl}/${url}`)
+
+        try {
+            return await this.createRequest(`${this.clientUrl}/${url}`);
+        } catch (exception) {
+            console.log('Node.js with client is not running!');
+        }
+
+        return null;
     }
 
     async apiCall(url, data = {}) {
@@ -54,7 +62,7 @@ class ApiManager {
         return this.apiCall('game/last')
     }
 
-    saveGameData(data) {
+    async saveGameData(data) {
         this.apiCall('game/save-result',{
             method: 'POST',
             mode: 'no-cors',
@@ -62,7 +70,13 @@ class ApiManager {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
+        }).then(data => {
+            console.log(data);
         })
+    }
+
+    async getGamesWithSummoner(summonerName) {
+        return this.apiCall(`/summoner/${summonerName}`);
     }
 
     async getChampions() {
@@ -70,14 +84,14 @@ class ApiManager {
     }
 
     async getSummoner(summonerId) {
-        return this.apiCall(`summoner/${summonerId}`)
+        return this.apiCall(`summoner/${summonerId}`);
     }
 
     async getActiveGame(summonerName) {
-        return this.apiCall(`game/active/${summonerName}`)
+        return this.apiCall(`game/active/${summonerName}`);
     }
 
     async getGameByPuuId(puuId) {
-        return this.apiCall(`game/by-puuid/${puuId}`)
+        return this.apiCall(`game/by-puuid/${puuId}`);
     }
 }

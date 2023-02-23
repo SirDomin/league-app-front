@@ -7,10 +7,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div>
+    <div class="header-container">
+        <div class="header-button-container">
+            <div class="button-default" id="show-previous">Show previous</div>
+            <div class="button-default" id="show-game">Show Game</div>
+            <div class="button-default" id="show-player">Show Player</div>
+
+        </div>
+
         <h1 class="header" id="header"></h1>
     </div>
-    <div id="container">
+    <div id="container" class="active-game-container">
 
     </div>
     <div id="myModal" class="modal">
@@ -32,6 +39,19 @@
         const stateDecider = new StateDecider(apiManager);
         const contentManager = new ContentManager();
 
+        const modal = document.getElementById("myModal");
+        const span = document.getElementsByClassName("close")[0];
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
         stateDecider.onStateChange(StateDecider.ANY, StateDecider.END_OF_GAME, () => {
             apiManager.saveGame()
                 .then(data => {
@@ -42,7 +62,6 @@
 
             document.getElementById('header').innerHTML = 'End of Game';
         });
-
 
         stateDecider.onStateChange(StateDecider.ANY, StateDecider.CHAMPION_SELECT, () => {
             contentManager.showTeammates();
@@ -71,13 +90,43 @@
             document.getElementById('header').innerHTML = 'Accepting Match';
         });
 
-        stateDecider.onStateChange([null, StateDecider.END_OF_GAME], [StateDecider.NONE, StateDecider.LOBBY, StateDecider.MATCHMAKING], () => {
+        stateDecider.onStateChange([null], [StateDecider.NONE, StateDecider.LOBBY, StateDecider.MATCHMAKING], () => {
             document.getElementById('header').innerHTML = 'Waiting for game to start';
 
             contentManager.displayWaitingForGame();
         });
 
         stateDecider.stateChanged(StateDecider.NONE)
+
+        const showPreviousButton = document.getElementById('show-previous');
+
+        showPreviousButton.addEventListener('click', () => {
+            stateDecider.forceState();
+            if (stateDecider.forced) {
+                contentManager.showPreviousGame();
+            }
+        })
+
+        const showGameButton = document.getElementById('show-game');
+
+        showGameButton.addEventListener('click', () => {
+            contentManager.showGame(prompt('show id'));
+        })
+
+        const showPlayerButton = document.getElementById('show-player');
+
+        showPlayerButton.addEventListener('click', () => {
+            const summonerName = prompt('Summoner Name:');
+            contentManager.displayChampionSelectPlayers(
+                {
+                    participants: [
+                        {
+                            name: summonerName,
+                        }
+                    ]
+                }
+            )
+        })
 
         let champions = [];
 
@@ -95,19 +144,6 @@
         apiManager.getChampions().then(data => {
             champions = data;
         })
-
-        let modal = document.getElementById("myModal");
-        let span = document.getElementsByClassName("close")[0];
-
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        }
 
         function fmtMSS(s){return(s-(s%=60))/60+(9<s?':':':0')+s}
     </script>
