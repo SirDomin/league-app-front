@@ -75,7 +75,6 @@ class ContentManager {
 
                     apiManager.saveGameData(data)
                         .then(data => {
-                            stateDecider.forced = false;
                             this.displayWaitingForGame();
                         })
                 });

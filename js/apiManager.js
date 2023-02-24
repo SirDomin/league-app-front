@@ -63,15 +63,12 @@ class ApiManager {
     }
 
     async saveGameData(data) {
-        this.apiCall('game/save-result',{
+        return this.apiCall('game/save-result',{
             method: 'POST',
-            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        }).then(data => {
-            console.log(data);
         })
     }
 
