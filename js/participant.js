@@ -1,5 +1,5 @@
 class Participant {
-    constructor(summonerName, gamesPlayed, championName, opggUrl, teamId, summonerId, id, comment) {
+    constructor(summonerName, gamesPlayed, championName, opggUrl, teamId, summonerId, id, comment, ranking) {
         this.summonerName = summonerName;
         this.gamesPlayed = gamesPlayed;
         this.championName = championName;
@@ -8,6 +8,7 @@ class Participant {
         this.summonerId = summonerId;
         this.id = id;
         this.comment = comment;
+        this.ranking = ranking;
     }
 
     getCard() {
@@ -29,6 +30,21 @@ class Participant {
         label1.appendChild(a);
         card.appendChild(label1);
 
+        const division = document.createElement('label');
+        division.classList.add('division-container');
+        const soloq = document.createElement('div');
+        const flex = document.createElement('div');
+
+        const soloQData = this.ranking.filter(obj => obj.hasOwnProperty('RANKED_SOLO_5x5'));
+        const flexData = this.ranking.filter(obj => obj.hasOwnProperty('RANKED_FLEX_SR'));
+
+        soloq.innerHTML = `RANKED SOLO: ${soloQData === [] ? '' : soloQData[0].RANKED_SOLO_5x5}`;
+        flex.innerHTML = `RANKED FLEX: ${flexData === [] ? '' : flexData[0].RANKED_FLEX_SR}`;
+
+        division.appendChild(soloq);
+        division.appendChild(flex);
+
+        card.appendChild(division);
         const label2 = document.createElement('label');
         label2.textContent = `${this.championName}`;
 

@@ -130,7 +130,10 @@ class ContentManager {
                     championName,
                     participant.url_opgg,
                     participant.team_id,
-                    participant.summoner_id
+                    participant.summoner_id,
+                    null,
+                    null,
+                    participant.division
                 )).getCard()
             );
         });

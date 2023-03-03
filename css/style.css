@@ -60,8 +60,14 @@ label a{
 
 .active-game-container .card {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     grid-template-rows: minmax(0, 30px) 1fr;
+}
+
+.division-container {
+    display: grid !important;
+    grid-template-rows: 1fr 1fr;
+    font-size: 0.7rem;
 }
 
 .show-games {
