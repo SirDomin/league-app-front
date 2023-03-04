@@ -38,8 +38,8 @@ class Participant {
         const soloQData = this.ranking.filter(obj => obj.hasOwnProperty('RANKED_SOLO_5x5'));
         const flexData = this.ranking.filter(obj => obj.hasOwnProperty('RANKED_FLEX_SR'));
 
-        soloq.innerHTML = `RANKED SOLO: ${soloQData === [] ? '' : soloQData[0].RANKED_SOLO_5x5}`;
-        flex.innerHTML = `RANKED FLEX: ${flexData === [] ? '' : flexData[0].RANKED_FLEX_SR}`;
+        soloq.innerHTML = `RANKED SOLO: ${soloQData.length === 0 ? '' : soloQData[0].RANKED_SOLO_5x5}`;
+        flex.innerHTML = `RANKED FLEX: ${flexData.length === 0 ? '' : flexData[0].RANKED_FLEX_SR}`;
 
         division.appendChild(soloq);
         division.appendChild(flex);
