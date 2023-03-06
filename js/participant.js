@@ -90,7 +90,7 @@ class Participant {
         const label2 = document.createElement('label');
 
         const a = document.createElement('a');
-        a.setAttribute('href', this.opggUrl);
+        a.setAttribute('href', `https://www.op.gg/summoners/eune/${this.summonerName}`);
         a.innerHTML = this.summonerName;
         label2.appendChild(a);
         card.appendChild(label2);
