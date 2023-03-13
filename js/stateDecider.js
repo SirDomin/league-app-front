@@ -25,9 +25,6 @@ class StateDecider {
     updateGameState() {
         this.apiManager.getGameState().then(data => {
             if (data !== null) {
-                if (this.forced === true) {
-                    return;
-                }
                 if (this.gameState !== data.game_state) {
                     this.gameState = data.game_state;
                     this.stateChanged(data.game_state);
