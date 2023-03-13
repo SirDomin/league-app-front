@@ -67,7 +67,7 @@ label a{
 .division-container {
     display: grid !important;
     grid-template-rows: 1fr 1fr;
-    font-size: 0.7rem;
+    font-size: 0.5rem;
 }
 
 .show-games {
