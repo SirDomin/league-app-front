@@ -129,7 +129,6 @@ class Participant {
         label3.textContent = `Position: ${participant.team_position} | Solo kills: ${participant.challenge.solo_kills} | Invade: ${participant.challenge.takedowns_before_jungle_minion_spawn > 0 ? 'Yes' : 'No'} `
         cardContainer.appendChild(label3);
 
-
         const label4 = document.createElement('label');
         label4.textContent = `FB assist: ${participant.first_blood_assist ? 'Yes' : 'No'}, Counter Jungle: ${Math.floor(participant.challenge.enemy_jungle_monster_kills)}, Early ganks: ${participant.challenge.kills_on_other_lanes_early_jungle_as_laner}`;
         cardContainer.appendChild(label4);
@@ -137,7 +136,6 @@ class Participant {
         const label5 = document.createElement('label');
         label5.textContent = `KP: ${Math.floor(participant.challenge.kill_participation * 100)}%, DPM: ${Math.floor(participant.challenge.damage_per_minute)} (${Math.floor(participant.challenge.team_damage_percentage * 100)}%), Stealth Kills: ${participant.challenge.kill_after_hidden_with_ally}, Tower Dives: ${participant.challenge.kills_near_enemy_turret}`;
         cardContainer.appendChild(label5);
-
 
         return cardContainer;
     }
