@@ -19,6 +19,7 @@ class Participant {
         card.style.border = '1px solid black';
         card.style.padding = '10px';
         card.style.margin = '10px';
+
         const gamesContainer = document.createElement('div');
         gamesContainer.classList.add('game-container');
 
