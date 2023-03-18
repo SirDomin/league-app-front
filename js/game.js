@@ -1,4 +1,6 @@
 class Game {
+    info;
+    metadata;
     constructor(info, metadata) {
         this.info = info;
         this.metadata = metadata;
