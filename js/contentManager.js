@@ -120,7 +120,14 @@ class ContentManager {
             if (!participant.champion_id) {
                 championName = '';
             } else {
-                championName = participant.champion_name ? participant.champion_name : getChampionById(participant.champion_id).id
+                if (participant.champion_name) {
+                    championName = participant.champion_name;
+                } else {
+                    championName = 'New'
+                    if (getChampionById(participant.champion_id)) {
+                        championName = getChampionById(participant.champion_id).id;
+                    }
+                }
             }
 
             container.appendChild(
