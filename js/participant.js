@@ -31,6 +31,11 @@ class Participant {
         label1.appendChild(a);
         card.appendChild(label1);
 
+        const label2 = document.createElement('label');
+        label2.textContent = `${this.championName}`;
+
+        card.appendChild(label2);
+
         const division = document.createElement('label');
         division.classList.add('division-container');
         const soloq = document.createElement('div');
@@ -46,10 +51,6 @@ class Participant {
         division.appendChild(flex);
 
         card.appendChild(division);
-        const label2 = document.createElement('label');
-        label2.textContent = `${this.championName}`;
-
-        card.appendChild(label2);
 
         const label3 = document.createElement('label');
         label3.textContent = `Games: ${this.gamesPlayed}`;
