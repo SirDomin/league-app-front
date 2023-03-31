@@ -150,8 +150,9 @@ class ContentManager {
         apiManager.getActiveGame('SirDomin')
             .then(data => {
                 if (!data.info) {
-                    console.log('no game');
-
+                    setTimeout(() => {
+                        this.showCurrentGame();
+                    }, 300);
                     return;
                 }
 
