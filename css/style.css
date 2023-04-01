@@ -20,7 +20,7 @@ html {
 }
 .team-100 {
     color: #b1cbbb;
-    background: #034f84;
+    background: #023b64;
 }
 
 .team-100 label a {
@@ -33,7 +33,7 @@ html {
 
 .team-200 {
     color: black;
-    background: #c94c4c;
+    background: #531313;
 }
 
 label a{
@@ -126,7 +126,7 @@ label a{
 
 .loader {
     border: 16px solid #f3f3f3;
-    border-top: 16px solid #034f84;
+    border-top: 16px solid #023b64;
     border-radius: 50%;
     width: 120px;
     height: 120px;
@@ -148,7 +148,7 @@ label a{
 
 /* CSS */
 .button-default {
-    background: rgb(3, 156, 100);
+    background: #026440;
     border-radius: 8px;
    border-style: none;
    box-sizing: border-box;
@@ -176,7 +176,7 @@ label a{
 }
 
 .button-default:hover {
-    box-shadow: rgb(3, 156, 100) 0 1px 30px;
+    box-shadow: #015033 0 1px 30px;
     transition-duration: .1s;
 }
 
