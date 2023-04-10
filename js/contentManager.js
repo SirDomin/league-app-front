@@ -1,4 +1,5 @@
 class ContentManager {
+    
     constructor() {
     }
 
