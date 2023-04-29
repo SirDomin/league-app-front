@@ -1,5 +1,5 @@
 class Participant {
-    constructor(summonerName, gamesPlayed, championName, opggUrl, teamId, summonerId, id, comment, ranking) {
+    constructor(summonerName, gamesPlayed, championName, opggUrl, teamId, summonerId, id, comment, ranking, data = null) {
         this.summonerName = summonerName;
         this.gamesPlayed = gamesPlayed;
         this.championName = championName;
@@ -9,6 +9,7 @@ class Participant {
         this.id = id;
         this.comment = comment;
         this.ranking = ranking;
+        this.data = data;
     }
 
     getCard() {
@@ -17,7 +18,7 @@ class Participant {
         card.classList.add('clickable');
         card.classList.add(`team-${this.teamId ? this.teamId : 'unknown'}`);
         card.style.border = '1px solid black';
-        card.style.padding = '10px';
+        card.style.padding = '3px';
         card.style.margin = '10px';
 
         const gamesContainer = document.createElement('div');
@@ -73,6 +74,29 @@ class Participant {
 
         })
         card.appendChild(gamesContainer);
+
+        if (this.data !== null && this.data[0]) {
+
+            const tags = document.createElement('label');
+
+            tags.textContent = `${this.data[0].tags.join(", ")}`;
+            tags.classList.add('small-multiple');
+
+            const rank = document.createElement('label');
+            rank.textContent = `${this.data[0].rank}`
+
+            const wr = document.createElement('label');
+            wr.textContent = `${this.data[0].wr}`;
+
+            const premade = document.createElement('label');
+            premade.textContent = `${this.data[0].premade}`
+
+            card.appendChild(wr);
+            card.appendChild(rank);
+            card.appendChild(tags);
+            card.appendChild(premade);
+            label1.classList.add(`premade-${this.data[0].premade}`)
+        }
 
         return card;
     }

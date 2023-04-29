@@ -55,7 +55,7 @@ label a{
 }
 
 .active-game-container {
-
+    font-size: 10px;
 }
 
 .active-game-container .card {
@@ -74,6 +74,7 @@ label a{
     cursor:pointer;
     border-radius: 10px 10px 0 0;
     user-select: none;
+    height: 30px !important;
 }
 
 .show-games.active {
@@ -81,7 +82,7 @@ label a{
 }
 
 .active-game-container label {
-    height: 30px;
+    height: 20px;
 }
 .game-container{
     grid-column: 1 / 6;
@@ -297,4 +298,24 @@ label a{
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 10px;
     padding: 10px;
+}
+
+.small-multiple {
+    font-size: 8px;
+}
+
+.premade-1 {
+    background: #044200;
+}
+
+.premade-2 {
+    background: #003b42;
+}
+
+.premade-3 {
+    background: #424200;
+}
+
+.premade-4 {
+    background: #040042;
 }

@@ -88,6 +88,10 @@ class ApiManager {
         return this.apiCall(`game/active/${summonerName}`);
     }
 
+    async getAdditionalData() {
+        return this.apiCall(`game/active-data/SirDomin`)
+    }
+
     async getGameByPuuId(puuId) {
         return this.apiCall(`game/by-puuid/${puuId}`);
     }

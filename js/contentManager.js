@@ -110,12 +110,25 @@ class ContentManager {
             })
     }
 
-    displayParticipants(participants) {
+    getDataForPlayer(data, participant) {
+        return data.filter(d => {
+            return d.nickname === participant.summoner_name || d.nickname + ' ' === participant.summoner_name;
+        })
+    }
+
+    displayParticipants(participants, data = null) {
         let container = document.getElementById('container');
 
         container.classList.add('active-game-container')
 
         participants.forEach(participant => {
+
+            let playerData = null;
+
+            if(data) {
+                playerData = this.getDataForPlayer(data.data, participant);
+            }
+
             let championName;
 
             if (!participant.champion_id) {
@@ -141,7 +154,8 @@ class ContentManager {
                     participant.summoner_id,
                     null,
                     null,
-                    participant.division
+                    participant.division,
+                    playerData
                 )).getCard()
             );
         });
@@ -160,6 +174,16 @@ class ContentManager {
                 const participants = data.info;
                 this.displayParticipants(participants)
 
+                this.addNewData(participants);
+            })
+    }
+
+    addNewData(participants) {
+        apiManager.getAdditionalData()
+            .then(data => {
+                document.getElementById('container').innerHTML = '';
+
+                this.displayParticipants(participants, data)
             })
     }
 
