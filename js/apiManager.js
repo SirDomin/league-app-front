@@ -28,7 +28,14 @@ class ApiManager {
     }
 
     async apiCall(url, data = {}) {
-        return this.createRequest(`${this.apiUrl}/${url}`, data)
+        try {
+            return this.createRequest(`${this.apiUrl}/${url}`, data)
+        } catch (exception) {
+            alert('token expired');
+            console.log('refresh token');
+        }
+
+        return null;
     }
 
     async riotCall() {
