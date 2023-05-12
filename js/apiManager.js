@@ -29,10 +29,12 @@ class ApiManager {
 
     async apiCall(url, data = {}) {
         try {
-            return this.createRequest(`${this.apiUrl}/${url}`, data)
+            return await this.createRequest(`${this.apiUrl}/${url}`, data)
         } catch (exception) {
-            alert('token expired');
-            console.log('refresh token');
+            alert(`token expired, retrying call to ${url} in 3 seconds`);
+            setTimeout(() => {
+                this.apiCall(url, data)
+            }, 3000);
         }
 
         return null;
