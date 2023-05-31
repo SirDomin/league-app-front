@@ -290,7 +290,7 @@ label a{
 
 .header-container {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 1.5fr 1fr 0.3fr;
 }
 
 .header-button-container {
@@ -318,4 +318,12 @@ label a{
 
 .premade-4 {
     background: #040042;
+}
+
+.status-ok {
+    color: #026440;
+}
+
+.status-bad {
+    color: #531313;
 }

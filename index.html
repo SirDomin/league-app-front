@@ -16,6 +16,12 @@
         </div>
 
         <h1 class="header" id="header"></h1>
+        <div class="header" id="status-container">
+            <div>
+                <div>Node <span id="node-status"></span></div>
+                <div>PHP <span id="server-status"></span></div>
+            </div>
+        </div>
     </div>
     <div id="container" class="active-game-container"></div>
     <div id="myModal" class="modal">
@@ -63,8 +69,6 @@
             document.getElementById('header').innerHTML = 'End of Game';
         });
 
-        stateDecider.stateChanged(StateDecider.END_OF_GAME);
-
         stateDecider.onStateChange(StateDecider.ANY, StateDecider.CHAMPION_SELECT, () => {
             contentManager.showTeammates();
 
@@ -94,7 +98,7 @@
         });
 
         stateDecider.onStateChange([null], [StateDecider.NONE, StateDecider.LOBBY, StateDecider.MATCHMAKING], () => {
-            document.getElementById('header').innerHTML = 'Waiting for game to start';
+            document.getElementById('header').innerHTML = 'Waiting for game';
 
             contentManager.displayWaitingForGame();
         });
@@ -154,6 +158,35 @@
         })
 
         function fmtMSS(s){return(s-(s%=60))/60+(9<s?':':':0')+s}
+
+        pingInterval = setInterval(() => {
+            try {
+                apiManager.getServerStatus().then(data => {
+                    if (data.status === 'OK') {
+                        document.getElementById('server-status').innerHTML = 'OK'
+                        document.getElementById('server-status').parentElement.classList.add('status-ok')
+                    }
+                })
+            } catch (e) {
+                document.getElementById('server-status').innerHTML = '--'
+                document.getElementById('server-status').parentElement.classList.add('status-bad')
+            }
+            try {
+                apiManager.getNodeServerStatus().then(data => {
+                    if (data && data.status === 'OK') {
+                        document.getElementById('node-status').innerHTML = 'OK'
+                        document.getElementById('node-status').parentElement.classList.add('status-ok')
+                    }
+                    else {
+                        document.getElementById('node-status').innerHTML = '--'
+                        document.getElementById('node-status').parentElement.classList.add('status-bad')
+                    }
+                })
+            } catch (e) {
+                document.getElementById('node-status').innerHTML = '--'
+                document.getElementById('node-status').parentElement.classList.add('status-bad')
+            }
+        }, 1000)
     </script>
 </body>
 </html>

@@ -16,6 +16,7 @@ class ApiManager {
         return fetch(url, data)
             .then(res => res.json());
     }
+
     async clientCall(url) {
 
         try {
@@ -31,10 +32,7 @@ class ApiManager {
         try {
             return await this.createRequest(`${this.apiUrl}/${url}`, data)
         } catch (exception) {
-            alert(`token expired, retrying call to ${url} in 3 seconds`);
-            setTimeout(() => {
-                this.apiCall(url, data)
-            }, 3000);
+
         }
 
         return null;
@@ -103,5 +101,13 @@ class ApiManager {
 
     async getGameByPuuId(puuId) {
         return this.apiCall(`game/by-puuid/${puuId}`);
+    }
+
+    async getNodeServerStatus() {
+        return this.clientCall(`status`);
+    }
+
+    async getServerStatus() {
+        return this.apiCall(`status`);
     }
 }
