@@ -29,6 +29,10 @@ class StateDecider {
                     this.gameState = data.game_state;
                     this.stateChanged(data.game_state);
                 }
+                if (data.game_state === StateDecider.READY_CHECK) {
+                    this.gameState = data.game_state;
+                    this.stateChanged(data.game_state);
+                }
             }
 
             setTimeout(() => {
