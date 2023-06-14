@@ -39,7 +39,7 @@ class ApiManager {
     }
 
     async riotCall() {
-        return this.createRequest('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json');
+        return this.createRequest('http://ddragon.leagueoflegends.com/cdn/13.12.1/data/en_US/champion.json');
     }
 
     async acceptMatch() {
