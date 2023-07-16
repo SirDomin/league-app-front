@@ -42,7 +42,7 @@
     <script src="js/contentManager.js"> </script>
     <script>
         const mocker = new Mocker();
-        const apiManager = new ApiManager(mocker);
+        const apiManager = new ApiManager(mocker, true);
         const stateDecider = new StateDecider(apiManager);
         const contentManager = new ContentManager();
 

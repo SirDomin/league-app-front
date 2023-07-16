@@ -2,7 +2,7 @@ class Mocker {
     constructor() {
         this.mocks = [
             {
-                url: 'http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json',
+                url: 'http://ddragon.leagueoflegends.com/cdn/data/en_US/champion.json',
                 body: {},
                 json: '/league-app-front/js/mocks/dragon.json'
             },
@@ -50,6 +50,21 @@ class Mocker {
                 url: 'https://laptop.local/game/active/SirDomin',
                 body: {},
                 json: '/league-app-front/js/mocks/active.json'
+            },
+            {
+                url: 'http://192.168.0.104:3000/game-state',
+                body: {},
+                json: '/league-app-front/js/mocks/game-state.json'
+            },
+            {
+                url: 'http://192.168.0.104:3000/status',
+                body: {},
+                json: '/league-app-front/js/mocks/status.json'
+            },
+            {
+                url: 'https://laptop.local/status',
+                body: {},
+                json: '/league-app-front/js/mocks/status.json'
             }
         ];
     }

@@ -18,7 +18,6 @@ class ApiManager {
     }
 
     async clientCall(url) {
-
         try {
             return await this.createRequest(`${this.clientUrl}/${url}`);
         } catch (exception) {
@@ -30,7 +29,7 @@ class ApiManager {
 
     async apiCall(url, data = {}) {
         try {
-            return await this.createRequest(`${this.apiUrl}/${url}`, data)
+            return await this.createRequest(`${this.apiUrl}/${url}`, data);
         } catch (exception) {
 
         }
@@ -39,6 +38,10 @@ class ApiManager {
     }
 
     async riotCall() {
+        if (this.mockValues === true) {
+            return this.mocker.getMock(`http://ddragon.leagueoflegends.com/cdn/data/en_US/champion.json`);
+        }
+
         return this.createRequest('http://ddragon.leagueoflegends.com/cdn/13.12.1/data/en_US/champion.json');
     }
 
