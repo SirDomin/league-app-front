@@ -1,0 +1,296 @@
+body {
+    background-color: #0f0f0f;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+.html, body, input, textarea, select, button, dialog {
+    background: #1c1e1f;
+}
+
+.client-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #1c1c1c;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    min-height: 100vh;
+    justify-content: space-between;
+}
+
+a {
+    color: #3ba7ff;
+}
+
+.team-100 {
+    background: #023b64;
+}
+
+.team-200 {
+    background: #531313;
+}
+
+.team-unknown {
+    background: lightgray;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-top : solid 1px black;
+    border-bottom : solid 1px black;
+    padding: 10px;
+}
+
+.menu .active {
+    background: #026440;
+}
+
+.menu a {
+    text-decoration: none;
+    padding: 10px;
+    border: solid 1px transparent;
+}
+
+.menu a:hover {
+    color: #026440;
+    border: solid 1px #026440;
+}
+
+.content {
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.content p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+.previous-participant-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.previous-participant-container > div {
+    width: calc(50% - 5px);
+    margin-bottom: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.previous-participant-container > textarea {
+    width: 100%;
+    height: 50px;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.previous-data-container {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+    grid-template-areas:
+      "item0 item5"
+      "item1 item6"
+      "item2 item7"
+      "item3 item8"
+      "item4 item9"
+}
+
+.game-detailed-container {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+    grid-template-areas:
+      "item0 item5"
+      "item1 item6"
+      "item2 item7"
+      "item3 item8"
+      "item4 item9"
+}
+
+.previous-data-container > .previous-participant-container {
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.item0 {
+    grid-area: item0;
+}
+
+.item1 {
+    grid-area: item1;
+}
+
+.item2 {
+    grid-area: item2;
+}
+
+.item3 {
+    grid-area: item3;
+}
+
+.item4 {
+    grid-area: item4;
+}
+
+.item5 {
+    grid-area: item5;
+}
+
+.item6 {
+    grid-area: item6;
+}
+
+.item7 {
+    grid-area: item7;
+}
+
+.item8 {
+    grid-area: item8;
+}
+
+.item9 {
+    grid-area: item9;
+}
+
+.button-submit {
+   --b: 3px;
+   --s: .45em;
+   --color: rgb(2, 92, 59);
+    cursor: pointer;
+
+   padding: calc(.5em + var(--s)) calc(.9em + var(--s));
+   color: var(--color);
+   --_p: var(--s);
+   background:
+           conic-gradient(from 90deg at var(--b) var(--b),#0000 90deg,var(--color) 0)
+           var(--_p) var(--_p)/calc(100% - var(--b) - 2*var(--_p)) calc(100% - var(--b) - 2*var(--_p));
+   transition: .1s linear, color 0s, background-color 0s;
+   outline: var(--b) solid #0000;
+   outline-offset: .6em;
+   font-size: 16px;
+
+   border: 0;
+
+   user-select: none;
+   -webkit-user-select: none;
+   touch-action: manipulation;
+}
+
+.button-submit:hover,
+.button-submit:focus-visible{
+    --_p: 0px;
+    outline-color: var(--color);
+    outline-offset: .05em;
+}
+
+.button-submit:active {
+    background: var(--color);
+    color: #fff;
+}
+
+.current-participant-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 10px;
+    padding: 0.3em;
+    grid-row-gap: 0.3em;
+    font-size: 0.7em;
+}
+
+.game-container {
+    grid-column: 1 / 6;
+    height: 0;
+    animation: hideAnimation 0.5s forwards;
+}
+
+.game-container.show {
+    max-height: 400px;
+    height: auto;
+    animation: expandAnimation 0.5s forwards;
+    overflow-y: auto;
+}
+
+.game {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 10px;
+    background: #7e817f;
+    color: black;
+    margin-bottom: 2px;
+}
+
+.game > div {
+    display: flex;
+}
+
+@keyframes expandAnimation {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 400px;
+    }
+}
+
+.detailed-card {
+    display: grid;
+    font-size: 0.8em;
+    padding: 5px;
+}
+
+.detailed-card > label {
+    display: flex;
+}
+
+.division-container {
+    font-size: 0.6em;
+}
+
+.small-multiple {
+    font-size: 0.5em;
+}
