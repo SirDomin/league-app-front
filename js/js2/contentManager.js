@@ -31,6 +31,10 @@ export class ContentManager {
             this.handleMessage(event);
         };
 
+        this.socket.onclose = () => {
+            this.disconnect();
+        };
+
         this.previousController = null;
     }
 
@@ -62,25 +66,38 @@ export class ContentManager {
 
         document.getElementById('content').innerHTML = '';
         this.previousController = controller;
+
+        document.getElementById('status-header').addEventListener('click', () => {
+            this.testFunc();
+        })
+
         controller.displayContent(data);
     }
 
     loginAs(data) {
         console.log(data.displayName);
+        document.getElementById('status-header').classList.add('online-status');
+        document.getElementById('status-header').classList.remove('offline-status');
         document.getElementById('status-header').innerHTML = `Online (${data.displayName})`;
 
-        this.socket.send(new SocketMessage(SocketMessage.GET_STATE_TYPE, {test: 'test'}).toString());
+        this.socket.send(new SocketMessage(SocketMessage.GET_STATE_TYPE, {}).toString());
+    }
+
+    disconnect(data) {
+        document.getElementById('status-header').classList.remove('online-status');
+        document.getElementById('status-header').classList.add('offline-status');
+        document.getElementById('status-header').innerHTML = `Offline`;
     }
 
     socketInit() {
-        this.socket.send(new SocketMessage(SocketMessage.GET_SUMMONER_TYPE, {test: 'test'}).toString());
+        this.socket.send(new SocketMessage(SocketMessage.GET_SUMMONER_TYPE, {}).toString());
     }
 
     getChampionSelectPlayers() {
         setTimeout(() => {
             this.socket.send(new SocketMessage(SocketMessage.GET_CHAMPION_SELECT_LOBBY, {}).toString())
 
-        }, 2000)
+        }, 3000)
     }
 
     gamePhaseChanged(data) {
@@ -90,9 +107,16 @@ export class ContentManager {
         }
 
         if (data.phase === StateDecider.READY_CHECK) {
-            this.socket.send(new SocketMessage(SocketMessage.ACCEPT_TYPE, {test: 'test'}).toString());
+            this.socket.send(new SocketMessage(SocketMessage.ACCEPT_TYPE, {}).toString());
         }
+    }
 
+    test(data) {
+        console.log('test', data);
+    }
+
+    testFunc() {
+        this.socket.send(new SocketMessage(SocketMessage.TEST, {}).toString());
     }
 
     handleMessage(event) {
@@ -108,6 +132,9 @@ export class ContentManager {
             break;
             case SocketMessage.GET_CHAMPION_SELECT_LOBBY_DATA:
                 this.controllers[1].displayChampionSelectPlayers(message.data);
+            break;
+            case SocketMessage.TEST:
+                this.test(message.data);
             break;
 
         }

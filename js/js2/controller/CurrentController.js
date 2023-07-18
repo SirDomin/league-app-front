@@ -1,5 +1,6 @@
 import {ApiManager} from '../apiManager.js';
 import {StateDecider} from "../stateDecider.js";
+import {PreviousController} from "./PreviousController.js";
 
 export class CurrentController {
     route;
@@ -11,6 +12,7 @@ export class CurrentController {
         this.interval = null;
         this.champions = [];
         this.contentManager = contentManager;
+        this.previousController = new PreviousController();
     }
 
     supports(route, data) {
@@ -50,7 +52,6 @@ export class CurrentController {
                 container.appendChild(this.getParticipants(participants));
 
                 this.addNewData(participants);
-
             })
     }
 
@@ -69,9 +70,7 @@ export class CurrentController {
             this.apiManager.saveGame()
                 .then(data => {
                     if (data) {
-                        let url = new URL(window.location.href);
-                        url.hash = `previous`;
-                        window.open(url.href, '_blank');
+                        this.previousController.showPreviousGame();
                     } else {
                         alert('could not save the game');
                     }
@@ -87,9 +86,7 @@ export class CurrentController {
         });
 
         this.stateDecider.onStateChange(StateDecider.ANY, StateDecider.READY_CHECK, () => {
-            this.apiManager.acceptMatch().then(data => {
-                console.log('Match accepted');
-            });
+
         });
 
         this.stateDecider.onStateChange([null], [StateDecider.NONE, StateDecider.LOBBY, StateDecider.MATCHMAKING], () => {
@@ -108,13 +105,10 @@ export class CurrentController {
             this.displayWaitingForGame();
         });
 
-        // this.interval = setInterval(() => {
-        //     this.stateDecider.updateGameState();
-        // }, this.stateDecider.refreshRate)
+        this.displayMenu();
     }
 
     onPageLeave(data) {
-        console.log('clear');
         window.clearInterval(this.interval);
     }
 
@@ -149,8 +143,16 @@ export class CurrentController {
 
             let playerData = null;
 
+            let premadeStatus = 'premade';
+
             if(data) {
                 playerData = this.getDataForPlayer(data.data, participant);
+
+                if(playerData[0]) {
+                    console.log(playerData[0]);
+                    premadeStatus = `premade-${playerData[0].premade}`;
+
+                }
             }
 
             participant.data = playerData;
@@ -172,7 +174,10 @@ export class CurrentController {
 
             participant.champion_name = championName;
 
-            container.appendChild(this.getCard(participant));
+            const card = this.getCard(participant);
+
+            card.classList.add(premadeStatus);
+            container.appendChild(card);
         });
 
         return container;

@@ -39,7 +39,7 @@ a {
 }
 
 .team-unknown {
-    background: lightgray;
+    background: rgb(56, 61, 63);
 }
 
 .header {
@@ -240,6 +240,7 @@ a {
     padding: 0.3em;
     grid-row-gap: 0.3em;
     font-size: 0.7em;
+    border: solid 2px transparent;
 }
 
 .game-container {
@@ -293,4 +294,37 @@ a {
 
 .small-multiple {
     font-size: 0.5em;
+}
+
+.header-status-container {
+    margin-top: 0.7em;
+}
+
+.online-status {
+    background: #026440;
+}
+
+.offline-status {
+    background: #531313;
+}
+
+#status-header {
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.premade-1 {
+    border-color: #044200;
+}
+
+.premade-2 {
+    border-color: #003b42;
+}
+
+.premade-3 {
+    border-color: #424200;
+}
+
+.premade-4 {
+    border-color: #040042;
 }

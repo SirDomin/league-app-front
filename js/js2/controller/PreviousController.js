@@ -13,6 +13,7 @@ export class PreviousController {
     }
 
     displayContent(data) {
+
         this.showPreviousGame();
     }
 
@@ -62,11 +63,10 @@ export class PreviousController {
                         })
                     }
 
-
                     this.apiManager.saveGameData(data)
                         .then(data => {
                             if (data.result === 'ok') {
-                                window.location.hash = 'home';
+                                window.location.hash = 'current';
                             } else {
                                 alert('Could not save the game');
                             }

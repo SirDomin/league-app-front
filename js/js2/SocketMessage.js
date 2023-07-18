@@ -4,6 +4,7 @@ export class SocketMessage {
     static GET_CHAMPION_SELECT_LOBBY = 'get_champion_select_lobby';
     static GET_CHAMPION_SELECT_LOBBY_DATA = 'get_champion_select_lobby_data';
     static ACCEPT_TYPE = 'accept';
+    static TEST = 'test';
 
     constructor(type, data) {
         this.type = type;
