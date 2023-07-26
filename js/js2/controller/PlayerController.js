@@ -14,11 +14,11 @@ export class PlayerController {
         return route === this.route;
     }
 
-    displayContent(playerName) {
+    displayContent(playerName, parent) {
         const container = document.createElement('div');
         container.classList.add('player-container');
 
-        document.getElementById('content').appendChild(this.createPanel());
+        parent.appendChild(this.createPanel());
 
         if (!playerName) {
             return;
@@ -31,7 +31,8 @@ export class PlayerController {
                         name: playerName,
                     }
                 ]
-            }
+            },
+            parent
         )
     }
 

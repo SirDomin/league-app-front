@@ -12,16 +12,16 @@ export class PreviousController {
         return route === this.route;
     }
 
-    displayContent(data) {
+    displayContent(data, parent) {
 
-        this.showPreviousGame();
+        this.showPreviousGame(parent);
     }
 
     onPageLeave() {
 
     }
 
-    showPreviousGame() {
+    showPreviousGame(parent, modal = false) {
         const container = document.createElement('div');
 
         this.apiManager.getLastGameData()
@@ -66,7 +66,11 @@ export class PreviousController {
                     this.apiManager.saveGameData(data)
                         .then(data => {
                             if (data.result === 'ok') {
-                                window.location.hash = 'current';
+                                if (modal === true) {
+                                    document.getElementById('myModal').style.display = 'none';
+                                } else {
+                                    window.location.hash = 'current';
+                                }
                             } else {
                                 alert('Could not save the game');
                             }
@@ -74,9 +78,8 @@ export class PreviousController {
                 });
 
                 buttonContainer.appendChild(submitButton);
-                document.getElementById('content').appendChild(buttonContainer);
-
-                document.getElementById('content').appendChild(container);
+                parent.appendChild(buttonContainer);
+                parent.appendChild(container);
             });
     }
 

@@ -4,7 +4,7 @@ export class Controller {
     route;
 
     constructor() {
-        this.route = 'current';
+        this.route = '';
         this.apiManager = new ApiManager();
     }
 
@@ -12,6 +12,6 @@ export class Controller {
         return route === this.route;
     }
 
-    displayContent(data) {
+    displayContent(data, container) {
     }
 }

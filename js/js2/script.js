@@ -17,3 +17,13 @@ function loadContent() {
 
 window.addEventListener('hashchange', loadContent);
 window.addEventListener('DOMContentLoaded', loadContent);
+
+window.addEventListener('click', function(event) {
+    if (event.target.classList.contains('button-default')) {
+        return;
+    }
+    if (event.target.classList.contains('modal')) {
+        document.getElementById('myModal').style.display = 'none';
+
+    }
+});

@@ -5,11 +5,12 @@ import {PlayerController} from "./controller/PlayerController.js";
 import {HistoryController} from "./controller/HistoryController.js";
 import {SocketMessage} from "./SocketMessage.js";
 import {StateDecider} from "./stateDecider.js";
+import {ApiManager} from './apiManager.js';
 
 export class ContentManager {
 
     previousController;
-
+    socketReady;
     constructor() {
         this.controllers = [
             new PreviousController(),
@@ -19,11 +20,15 @@ export class ContentManager {
             new HistoryController(),
         ];
 
+        this.apiManager = new ApiManager();
+
+        this.socketReady = false;
+
         this.socket = new WebSocket('ws://127.0.0.1:8080');
 
         this.socket.onopen = () => {
             console.log('Connected to websocket');
-
+            this.socketReady = true;
             this.socketInit();
         }
 
@@ -68,10 +73,14 @@ export class ContentManager {
         this.previousController = controller;
 
         document.getElementById('status-header').addEventListener('click', () => {
+
+            this.apiManager.login(
+                'SirDomin', 'test'
+            );
             this.testFunc();
         })
 
-        controller.displayContent(data);
+        controller.displayContent(data, document.getElementById('content'));
     }
 
     loginAs(data) {
@@ -80,7 +89,15 @@ export class ContentManager {
         document.getElementById('status-header').classList.remove('offline-status');
         document.getElementById('status-header').innerHTML = `Online (${data.displayName})`;
 
+        console.log(data);
+
         this.socket.send(new SocketMessage(SocketMessage.GET_STATE_TYPE, {}).toString());
+    }
+
+    updateState() {
+        if (this.socketReady) {
+            this.socket.send(new SocketMessage(SocketMessage.GET_STATE_TYPE, {}).toString());
+        }
     }
 
     disconnect(data) {
@@ -131,7 +148,7 @@ export class ContentManager {
                 this.gamePhaseChanged(message.data)
             break;
             case SocketMessage.GET_CHAMPION_SELECT_LOBBY_DATA:
-                this.controllers[1].displayChampionSelectPlayers(message.data);
+                this.controllers[1].displayChampionSelectPlayers(message.data, document.getElementById('content'));
             break;
             case SocketMessage.TEST:
                 this.test(message.data);

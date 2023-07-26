@@ -84,6 +84,14 @@ export class ApiManager {
         })
     }
 
+    async getHistory(summonerName, limit, start, lastTimestamp) {
+        return this.apiCall(`game/history/${summonerName}/${limit}/${start}/${lastTimestamp}`);
+    }
+
+    async saveGameByMatchId(matchId) {
+        return this.apiCall(`game/save/${matchId}`);
+    }
+
     async getGamesWithSummoner(summonerName) {
         return this.apiCall(`/summoner/${summonerName}`);
     }
@@ -102,6 +110,19 @@ export class ApiManager {
 
     async getAdditionalData() {
         return this.apiCall(`game/active-data/SirDomin`)
+    }
+
+    async login(login, password) {
+        return this.apiCall(`login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                login: login,
+                password: password,
+            })
+        });
     }
 
     async getGameByPuuId(puuId) {

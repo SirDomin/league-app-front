@@ -12,15 +12,18 @@ export class GameController {
         return route === this.route;
     }
 
-    displayContent(gameId) {
-        const container = document.createElement('div');
-        container.classList.add('game-detailed-container');
-
-        document.getElementById('content').appendChild(this.createPanel());
+    displayContent(gameId, container) {
+        const gameContainer = document.createElement('div');
+        gameContainer.classList.add('game-detailed-container');
+        container.appendChild(this.createPanel());
 
         if (!gameId) {
             return;
         }
+        this.showGame(gameId, container, gameContainer);
+    }
+
+    showGame(gameId, container, gameContainer) {
         this.apiManager.getGameByPuuId(gameId)
             .then(data => {
 
@@ -39,15 +42,14 @@ export class GameController {
 
                 headerInfo.innerHTML = `GAME: ${gameId} | ${formattedDate} | ( Duration ${this.fmtMSS(data.info.game_duration)} ) win: ${winningTeam} | MODE: ${data.info.game_mode}-${data.info.game_type}`
                 data.info.participants.forEach((participant, index) => {
-                    console.log(participant);
                     let card = this.getDetailedCard(participant);
                     card.classList.add(`item${index}`)
 
-                    container.appendChild(card);
+                    gameContainer.appendChild(card);
                 });
 
-                document.getElementById('content').appendChild(headerInfo);
-                document.getElementById('content').appendChild(container);
+                container.appendChild(headerInfo);
+                container.appendChild(gameContainer);
             })
     }
 

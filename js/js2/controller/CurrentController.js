@@ -1,10 +1,11 @@
 import {ApiManager} from '../apiManager.js';
 import {StateDecider} from "../stateDecider.js";
 import {PreviousController} from "./PreviousController.js";
+import {GameController} from "./GameController.js";
 
 export class CurrentController {
     route;
-
+    container;
     constructor(contentManager) {
         this.route = 'current';
         this.apiManager = new ApiManager();
@@ -13,6 +14,8 @@ export class CurrentController {
         this.champions = [];
         this.contentManager = contentManager;
         this.previousController = new PreviousController();
+        this.gameController = new GameController();
+        this.container = null;
     }
 
     supports(route, data) {
@@ -20,36 +23,28 @@ export class CurrentController {
     }
 
     displayWaitingForGame() {
-        const container = document.getElementById('content');
-
-        container.innerHTML = 'Waiting for game';
+        this.container.innerHTML = 'Waiting for game';
     }
 
     displayMenu() {
-        const container = document.getElementById('content');
-
-        container.innerHTML = 'In Menu';
+        this.container.innerHTML = 'In Menu';
     }
 
     displayLobby() {
-        const container = document.getElementById('content');
-
-        container.innerHTML = 'In Lobby';
+        this.container.innerHTML = 'In Lobby';
     }
 
     showCurrentGame() {
-        const container = document.getElementById('content');
-
         this.apiManager.getActiveGame('SirDomin')
             .then(data => {
                 if (!data.info) {
-                    container.innerHTML = 'Not In game'
+                    this.container.innerHTML = 'Not In game'
                     return;
                 }
 
                 const participants = data.info;
 
-                container.appendChild(this.getParticipants(participants));
+                this.container.appendChild(this.getParticipants(participants));
 
                 this.addNewData(participants);
             })
@@ -59,7 +54,8 @@ export class CurrentController {
         this.stateDecider.updateGameState(state);
     }
 
-    displayContent(data) {
+    displayContent(data, container) {
+        this.container = container;
         this.stateDecider = new StateDecider();
 
         this.apiManager.getChampions().then(data => {
@@ -70,7 +66,9 @@ export class CurrentController {
             this.apiManager.saveGame()
                 .then(data => {
                     if (data) {
-                        this.previousController.showPreviousGame();
+                        document.getElementById('myModal').style.display = 'block';
+                        document.getElementById('modal-content').innerHTML = ''
+                        this.previousController.showPreviousGame(document.getElementById('modal-content'), true);
                     } else {
                         alert('could not save the game');
                     }
@@ -106,13 +104,14 @@ export class CurrentController {
         });
 
         this.displayMenu();
+        this.contentManager.updateState();
     }
 
     onPageLeave(data) {
         window.clearInterval(this.interval);
     }
 
-    displayChampionSelectPlayers(participants) {
+    displayChampionSelectPlayers(participants, container) {
         if (participants === []) {
             return;
         }
@@ -125,7 +124,6 @@ export class CurrentController {
         this.apiManager.getChampionSelectData(participantNames)
             .then(data => {
                 const participants = data.info;
-                const container = document.getElementById('content');
                 container.appendChild(this.getParticipants(participants))
             })
     }
@@ -149,9 +147,7 @@ export class CurrentController {
                 playerData = this.getDataForPlayer(data.data, participant);
 
                 if(playerData[0]) {
-                    console.log(playerData[0]);
                     premadeStatus = `premade-${playerData[0].premade}`;
-
                 }
             }
 
@@ -353,9 +349,12 @@ export class CurrentController {
         gameId.classList.add('small');
         gameId.textContent = `Display ( ${data.matchId} )`;
         gameId.addEventListener('click', () => {
-            let url = new URL(window.location.href);
-            url.hash = `game/${data.matchId}`;
-            window.open(url.href, '_blank');
+            document.getElementById('myModal').style.display = 'block';
+            const gameContainer = document.createElement('div');
+            gameContainer.innerHTML = '';
+            gameContainer.classList.add('game-detailed-container');
+            document.getElementById('modal-content').innerHTML = ''
+            this.gameController.showGame(data.matchId, document.getElementById('modal-content'), gameContainer);
         });
         labelRedirect.appendChild(gameId);
         div.appendChild(labelRedirect);
