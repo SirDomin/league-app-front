@@ -65,6 +65,7 @@ a {
 
 .menu .active {
     background: #026440;
+    color: white;
 }
 
 .menu a {
@@ -76,6 +77,10 @@ a {
 .menu a:hover {
     color: #026440;
     border: solid 1px #026440;
+}
+
+.menu .active:hover {
+    color: white;
 }
 
 .content {
@@ -121,6 +126,7 @@ a {
     height: 50px;
     padding: 2px;
     box-sizing: border-box;
+    color: white;
 }
 
 .previous-data-container {
@@ -338,6 +344,7 @@ a {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
 }
 
 /* Modal Content */
@@ -452,4 +459,280 @@ a {
 
 .login-container {
 
+}
+
+.control-panel {
+    padding-top: 5px;
+}
+
+.control-panel input {
+    color: white;
+    border: solid 3px rgb(2, 92, 59);
+    padding: 5px;
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+.champions-container {
+    padding: 1em;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-gap: 0.2em;
+    height: 100%;
+    overflow-y: scroll;
+    margin-top: 10px;
+}
+
+.champion-info {
+    position: relative;
+    width: 90%;
+    height: 100px;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+    padding: 0.3em;
+}
+
+.champion-info img {
+    width: 75%;
+    height: 50%;
+    border-radius: 50%;
+}
+
+.chest-available {
+    border: 2px solid gold;
+}
+
+.last-played-time {
+    color: #666;
+}
+
+.champions-controller-control-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1em 1em;
+    grid-template-areas:
+    "filter-div filter-div filter-div show-chests"
+    "sort-name sort-id sort-last-played reset";
+
+    padding: 1em;
+}
+
+.filter-div {
+    grid-area: filter-div;
+    margin: auto;
+}
+
+.filter-div input {
+    color: white;
+    border: solid 3px rgb(2, 92, 59);
+    padding: 5px;
+    font-size: 16px;
+}
+
+.sort-name {
+    display: grid;
+    grid-gap: 0.2em;
+    grid-area: sort-name;
+}
+.sort-id {
+    display: grid;
+    grid-gap: 0.2em;
+    grid-area: sort-id;
+}
+.sort-last-played {
+    display: grid;
+    grid-gap: 0.2em;
+    grid-area: sort-last-played;
+}
+.reset {
+    display: grid;
+    grid-gap: 0.2em;
+    grid-area: reset;
+}
+.show-chests {
+    grid-area: show-chests;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.champions-controller-control-panel button {
+    background: #026440;
+    color: white;
+    border: solid 1px transparent;
+    cursor: pointer;
+}
+
+.show-chests-checkbox {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: #026440;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.show-chests-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.show-chests-checkbox .checkmark {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.show-chests-checkbox input[type="checkbox"]:checked ~ .checkmark {
+    opacity: 1;
+}
+
+.show-chests-checkbox .checkmark:before,
+.show-chests-checkbox .checkmark:after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 16px;
+    background-color: #026440;
+    top: 0;
+    left: 7px;
+}
+
+.show-chests-checkbox .checkmark:before {
+    transform: rotate(45deg);
+}
+
+.show-chests-checkbox .checkmark:after {
+    transform: rotate(-45deg);
+}
+
+.show-chests-checkbox label {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.champions-controller-control-panel .active {
+    background: #015734;
+}
+
+.champion-list-container {
+    height: 90vh;
+    overflow-y: auto;
+    display: grid;
+    padding: 0.5em;
+    grid-template-columns: repeat(10, 1fr);
+}
+
+.champion-info-small {
+    position: relative;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+    padding: 0.3em;
+}
+
+.champion-info-small img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.ban-container {
+    overflow-y: auto;
+    display: grid;
+    padding: 0.5em;
+    grid-template-columns: repeat(10, 1fr);
+}
+.pick-container {
+    overflow-y: auto;
+    display: grid;
+    padding: 0.5em;
+    grid-template-columns: repeat(10, 1fr);
+}
+
+.mode-container {
+    padding: 1em;
+    margin: 1em;
+    border: solid 1px black;
+}
+
+.config-button {
+    background-color: #026440;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1;
+}
+
+.config-button:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.config-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.config-button:hover:before {
+    opacity: 1;
+}
+
+.config-button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.champion-list-container .champion-info-small {
+    cursor: pointer;
+}
+
+.champion-list-container.list-bans .champion-info-small:hover {
+    background: #531313;
+}
+
+.champion-list-container.list-picks .champion-info-small:hover {
+    background: #026440;
+}
+.mode-container .champion-info-small {
+    cursor: pointer;
+}
+
+.mode-container .champion-info-small:hover {
+    background: rgba(255, 255, 255, 0.2);
 }

@@ -1,4 +1,6 @@
-class StateDecider {
+import {ApiManager} from './apiManager.js';
+
+export class StateDecider {
     static LOBBY = 'Lobby';
     static NONE = 'None';
     static MATCHMAKING = 'Matchmaking';
@@ -11,34 +13,24 @@ class StateDecider {
     static ANY = 'Any';
     static FORCED = 'Forced';
 
-    #refreshRate;
-
-    constructor(apiManager) {
-        this.apiManager = apiManager;
+    constructor() {
+        this.apiManager = new ApiManager();
         this.gameState = null;
         this.handlers = [];
-        this.#refreshRate = 1000;
+        this.refreshRate = 1000;
         this.forced = false;
         this.updateGameState();
     }
 
-    updateGameState() {
-        this.apiManager.getGameState().then(data => {
-            if (data !== null) {
-                if (this.gameState !== data.game_state) {
-                    this.gameState = data.game_state;
-                    this.stateChanged(data.game_state);
-                }
-                if (data.game_state === StateDecider.READY_CHECK) {
-                    this.gameState = data.game_state;
-                    this.stateChanged(data.game_state);
-                }
-            }
-
-            setTimeout(() => {
-                this.updateGameState();
-            }, this.#refreshRate)
-        });
+    updateGameState(state) {
+        if (this.gameState !== state) {
+            this.gameState = state;
+            this.stateChanged(state);
+        }
+        if (state === StateDecider.READY_CHECK) {
+            this.gameState = state;
+            this.stateChanged(state);
+        }
     }
 
     onStateChange(previousState, newState, callback) {

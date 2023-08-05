@@ -1,226 +1,209 @@
-class ContentManager {
+import {PreviousController} from "./controller/PreviousController.js";
+import {CurrentController} from "./controller/CurrentController.js";
+import {GameController} from "./controller/GameController.js";
+import {PlayerController} from "./controller/PlayerController.js";
+import {HistoryController} from "./controller/HistoryController.js";
+import {SocketMessage} from "./SocketMessage.js";
+import {StateDecider} from "./stateDecider.js";
+import {ApiManager} from './apiManager.js';
+import {LocalStorage} from "./LocalStorage.js";
+import {ChampionsController} from "./controller/ChampionsController.js";
+import {ConfigController} from "./controller/ConfigController.js";
 
+export class ContentManager {
+
+    previousController;
+    socketReady;
     constructor() {
+        this.controllers = [
+            new PreviousController(),
+            new CurrentController(this),
+            new GameController(),
+            new PlayerController(),
+            new HistoryController(),
+            new ChampionsController(this),
+            new ConfigController(this)
+        ];
+        this.availableQueues = [];
+
+        this.apiManager = new ApiManager();
+        this.localStorage = new LocalStorage();
+
+        this.socketReady = false;
+
+        this.socket = new WebSocket('ws://127.0.0.1:8080');
+
+        this.socket.onopen = () => {
+            console.log('Connected to websocket');
+            this.socketReady = true;
+            this.socketInit();
+        }
+
+        this.socket.onmessage = (event) => {
+            this.handleMessage(event);
+        };
+
+        this.socket.onclose = () => {
+            this.disconnect();
+        };
+
+        this.previousController = null;
     }
 
-    displayWaitingForGame() {
-        document.getElementById('container').innerHTML = '';
+    displayContent(route, data) {
+        const controller = this.controllers.find(
+            controller => controller.hasOwnProperty('route') &&
+            controller.route === route
+        )
 
-        const divContainer = document.createElement('div');
-        divContainer.classList.add('container-loader');
+        const menu = document.getElementById('menu');
 
-        const loader = document.createElement('div');
-        loader.classList.add('loader');
+        if (this.previousController) {
+            this.previousController.onPageLeave();
+        }
 
-        const h1 = document.createElement('h1');
+        Array.from(menu.getElementsByTagName('a')).forEach(element => {
+            element.classList.remove('active');
+        });
 
-        h1.innerHTML = 'Waiting For Game';
+        const activeItem = document.querySelector(`a[href="#${route}"]`);
 
-        divContainer.appendChild(loader);
-        divContainer.appendChild(h1);
+        if (activeItem) {
+            activeItem.classList.add('active')
+        }
+        if (!controller) {
+            document.getElementById('content').innerHTML = '<h2>Page not found</h2><p>The requested page was not found.</p>';
+            return;
+        }
 
-        document.getElementById('container').appendChild(divContainer);
-    }
+        document.getElementById('content').innerHTML = '';
+        this.previousController = controller;
 
-    showPreviousGame() {
-        document.getElementById('container').classList.remove('active-game-container');
+        document.getElementById('status-header').addEventListener('click', () => {
 
-        const container = document.createElement('div');
-
-        apiManager.getLastGameData()
-            .then(data => {
-                const participants = data.game.info.participants;
-
-                container.classList.add('cards-container')
-
-                participants.forEach(participant => {
-                    let championName;
-
-                    if (!participant.champion_id) {
-                        championName = '';
-                    } else {
-                        championName = participant.champion_name ? participant.champion_name : getChampionById(participant.champion_id).id
-                    }
-
-                    container.appendChild(
-                        (new Participant(
-                            participant.summoner_name,
-                            participant.games_played,
-                            championName,
-                            participant.url_opgg,
-                            participant.team_id,
-                            participant.summoner_id,
-                            participant.id,
-                            participant.comment,
-                        )).getCommentCard()
-                    );
-                });
-
-                const buttonContainer = document.createElement('div');
-                buttonContainer.classList.add('submit-button-center');
-
-                const submitButton = document.createElement('button');
-                submitButton.classList.add('button-default');
-                submitButton.textContent = 'Save comments';
-
-                submitButton.addEventListener('click', async () => {
-                    const inputs = document.querySelectorAll('textarea');
-
-                    const data = [];
-                    for (const input of inputs) {
-                        data.push({
-                            id: input.getAttribute('data-id'),
-                            comment: input.value,
-                        })
-                    }
-
-                    apiManager.saveGameData(data)
-                        .then(data => {
-                            this.displayWaitingForGame();
-                        })
-                });
-
-                document.getElementById('container').innerHTML = '';
-                buttonContainer.appendChild(submitButton);
-                document.getElementById('container').appendChild(buttonContainer);
-
-                document.getElementById('container').appendChild(container);
-            });
-    }
-
-    showGame(gameId) {
-        const modalContainer = document.getElementById('container-modal');
-        modalContainer.innerHTML = '';
-
-        apiManager.getGameByPuuId(gameId)
-            .then(data => {
-                modal.style.display = "flex";
-                const date = new Date(parseInt(data.info.game_creation));
-                const formattedDate = date.toISOString().slice(0, 16).replace('T', ' ');
-
-                const winningTeam = data.info.teams[0].win ? 'Blue Team' : 'Red Team';
-
-                const headerInfo = document.getElementById('game-info');
-                headerInfo.innerHTML = `GAME: ${gameId} | ${formattedDate} | ( Duration ${fmtMSS(data.info.game_duration)} ) win: ${winningTeam} | MODE: ${data.info.game_mode}-${data.info.game_type}`
-                data.info.participants.forEach(participant => {
-                    modalContainer.appendChild(
-                        (new Participant()).getDetailedCard(participant)
-                    );
-                })
-            })
-    }
-
-    getDataForPlayer(data, participant) {
-        return data.filter(d => {
-            return d.nickname === participant.summoner_name || d.nickname + ' ' === participant.summoner_name;
+            this.testFunc();
         })
+
+        if (this.socketReady === true && this.availableQueues !== []) {
+            controller.displayContent(data, document.getElementById('content'));
+        } else {
+            setTimeout(() => {
+                controller.displayContent(data, document.getElementById('content'));
+            }, 100);
+        }
     }
 
-    displayParticipants(participants, data = null) {
-        let container = document.getElementById('container');
+    loginAs(data) {
+        console.log(data.displayName);
+        document.getElementById('status-header').classList.add('online-status');
+        document.getElementById('status-header').classList.remove('offline-status');
+        document.getElementById('status-header').innerHTML = `Online (${data.displayName})`;
 
-        container.classList.add('active-game-container')
-
-        participants.forEach(participant => {
-
-            let playerData = null;
-
-            if(data) {
-                playerData = this.getDataForPlayer(data.data, participant);
-            }
-
-            let championName;
-
-            if (!participant.champion_id) {
-                championName = '';
-            } else {
-                if (participant.champion_name) {
-                    championName = participant.champion_name;
-                } else {
-                    championName = 'New'
-                    if (getChampionById(participant.champion_id)) {
-                        championName = getChampionById(participant.champion_id).id;
-                    }
-                }
-            }
-
-            container.appendChild(
-                (new Participant(
-                    participant.summoner_name,
-                    participant.games_played,
-                    championName,
-                    participant.url_opgg,
-                    participant.team_id,
-                    participant.summoner_id,
-                    null,
-                    null,
-                    participant.division,
-                    playerData
-                )).getCard()
-            );
-        });
-    }
-
-    showCurrentGame() {
-        apiManager.getActiveGame('SirDomin')
-            .then(data => {
-                if (!data.info) {
-                    setTimeout(() => {
-                        this.showCurrentGame();
-                    }, 300);
-                    return;
-                }
-
-                const participants = data.info;
-                this.displayParticipants(participants)
-
-                this.addNewData(participants);
-            })
-    }
-
-    addNewData(participants) {
-        apiManager.getAdditionalData()
-            .then(data => {
-                document.getElementById('container').innerHTML = '';
-
-                this.displayParticipants(participants, data)
-            })
-    }
-
-    displayChampionSelectPlayers(participants) {
-        document.getElementById('container').innerHTML = '';
-
-        let participantNames = [];
-
-        participants['participants'].forEach(participant => {
-            participantNames.push({summonerName: participant.name});
+        this.apiManager.login(data).then(loginData => {
+           this.localStorage.save('puuid', loginData['puuid']);
         });
 
-        apiManager.getChampionSelectData(participantNames)
-            .then(data => {
-                const participants = data.info;
+        this.localStorage.save('summonerId', data['summonerId'])
 
-                this.displayParticipants(participants);
-            })
+        this.socket.send(new SocketMessage(SocketMessage.GET_STATE_TYPE, {}).toString());
     }
 
-    showTeammates() {
+    getChampions() {
+
+    }
+
+    updateState() {
+        if (this.socketReady) {
+            this.socket.send(new SocketMessage(SocketMessage.GET_STATE_TYPE, {}).toString());
+        }
+    }
+
+    disconnect(data) {
+        document.getElementById('status-header').classList.remove('online-status');
+        document.getElementById('status-header').classList.add('offline-status');
+        document.getElementById('status-header').innerHTML = `Offline`;
+    }
+
+    socketInit() {
+        this.socket.send(new SocketMessage(SocketMessage.GET_SUMMONER_TYPE, {}).toString());
+        this.saveConfig(this.localStorage.get('config'));
+    }
+
+    getChampionSelectPlayers() {
         setTimeout(() => {
-            apiManager.getChampionSelectPlayers().then(data => {
-                this.displayChampionSelectPlayers(data);
-            })
+            this.socket.send(new SocketMessage(SocketMessage.GET_CHAMPION_SELECT_LOBBY, {}).toString())
+
         }, 3000)
     }
 
-    getGamesAsHTML(summonerId, container, label) {
-        apiManager.getSummoner(summonerId)
-            .then(data => {
-                data.forEach(gameElement => {
-                    container.appendChild(
-                        (new Game(gameElement.info, gameElement.metadata)).getGameCard()
-                    );
-                })
-                label.classList.toggle('active');
-            })
+    gamePhaseChanged(data) {
+        if (this.previousController === this.controllers[1]) {
+            this.controllers[1].stateChanged(data.phase);
+            console.log(data.phase);
+        }
+
+        if (data.phase === StateDecider.READY_CHECK) {
+            this.socket.send(new SocketMessage(SocketMessage.ACCEPT_TYPE, {}).toString());
+            this.saveConfig(this.localStorage.get('config'));
+        }
+    }
+
+    test(data) {
+        console.log('test', data);
+    }
+
+    testFunc() {
+        this.socket.send(new SocketMessage(SocketMessage.TEST, {}).toString());
+    }
+
+    requestChampionRewardsData() {
+        this.socket.send(new SocketMessage(SocketMessage.GET_AVAILABLE_CHESTS, {}).toString());
+    }
+
+    saveConfig(config) {
+
+        this.socket.send(new SocketMessage(SocketMessage.SAVE_CONFIG, config).toString());
+    }
+
+    banChampion() {
+        this.socket.send(new SocketMessage(SocketMessage.BAN_CHAMPION, {
+            summonerId: this.localStorage.get('summonerId'),
+        }))
+    }
+
+    fillChestInfo(data) {
+        document.getElementById('chest-info-container-available').innerHTML = `${data.earnableChests}/${data.maximumChests}`;
+        document.getElementById('chest-info-container-available-date').innerHTML = `${new Date(data.nextChestRechargeTime).toLocaleString()}`;
+    }
+
+    handleMessage(event) {
+        const message = SocketMessage.fromJSON(JSON.parse(event.data))
+
+        switch (message.type) {
+            case "GetLolSummonerV1CurrentSummoner":
+                this.loginAs(message.data)
+            break;
+            case SocketMessage.GET_STATE_TYPE:
+            case "GetLolGameflowV1Session":
+                this.gamePhaseChanged(message.data)
+            break;
+            case SocketMessage.GET_CHAMPION_SELECT_LOBBY_DATA:
+                this.controllers[1].displayChampionSelectPlayers(message.data, document.getElementById('content'));
+            break;
+            case SocketMessage.GET_AVAILABLE_CHESTS:
+                this.controllers[5].championDataReceived(message.data);
+            break;
+            case SocketMessage.GET_AVAILABLE_CHESTS_DATA:
+                this.fillChestInfo(message.data);
+            break;
+            case SocketMessage.TEST:
+                this.test(message.data);
+            break;
+            case SocketMessage.GET_AVAILABLE_QUEUES:
+                this.availableQueues = message.data;
+            break;
+
+        }
+        console.log(message);
     }
 }

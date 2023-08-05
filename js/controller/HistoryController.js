@@ -1,5 +1,7 @@
 import {ApiManager} from '../apiManager.js';
 import {GameController} from "./GameController.js";
+import {LocalStorage} from "../LocalStorage.js";
+import {QueueTypeTransformer} from "../QueueTypeTransformer.js";
 
 export class HistoryController {
     route;
@@ -12,6 +14,7 @@ export class HistoryController {
         this.gameController = new GameController();
         this.contentLoaded = true;
         this.lastTimestamp = 0;
+        this.localStorage = new LocalStorage();
     }
 
     supports(route, data) {
@@ -38,7 +41,7 @@ export class HistoryController {
             if (this.isScrolledToBottom(container)) {
                 this.start += 50;
 
-                this.apiManager.getHistory('SirDomin', this.limit, this.start, this.lastTimestamp)
+                this.apiManager.getHistory(this.localStorage.get('puuid'), this.limit, this.start, this.lastTimestamp)
                     .then(data => {
                         this.contentLoaded = true;
                         this.addGamesToContent(data.games, historyContainer);
@@ -46,7 +49,7 @@ export class HistoryController {
             }
         }, 250))
 
-        this.apiManager.getHistory('SirDomin', this.limit, this.start, this.lastTimestamp)
+        this.apiManager.getHistory(this.localStorage.get('puuid'), this.limit, this.start, this.lastTimestamp)
             .then(data => {
                 this.addGamesToContent(data.games, historyContainer);
             })
@@ -98,8 +101,16 @@ export class HistoryController {
         this.lastTimestamp = game.info.game_creation;
 
         const activePlayer = game.info.participants.filter(participant => {
-            return participant.summoner_name === 'SirDomin' || participant.summoner_name === 'SirDoomin';
+            return participant.puuid === this.localStorage.get('puuid');
         })
+
+        const queueType = QueueTypeTransformer.convert(game.info.queue_id);
+
+        if (queueType === null) {
+            console.log(`queue type with type ${game.info.queue_id} not found`);
+        }
+
+        idContainer.innerHTML = `[${queueType ?? game.info.game_mode}]`
 
         idContainer.innerHTML += ` [ ${formattedDate} ] (${activePlayer[0].champion_name})`;
 

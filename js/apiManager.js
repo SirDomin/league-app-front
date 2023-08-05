@@ -1,10 +1,12 @@
-class ApiManager {
+import {Mocker} from "./mocker.js";
+
+export class ApiManager {
     apiUrl = 'https://laptop.local';
     clientUrl = 'http://192.168.0.104:3000';
 
     mocker;
-    constructor(mocker, mockValues = false) {
-        this.mocker = mocker;
+    constructor(mockValues = false) {
+        this.mocker = new Mocker();
         this.mockValues = mockValues;
     }
 
@@ -82,6 +84,14 @@ class ApiManager {
         })
     }
 
+    async getHistory(puuid, limit, start, lastTimestamp) {
+        return this.apiCall(`game/history/${puuid}/${limit}/${start}/${lastTimestamp}`);
+    }
+
+    async saveGameByMatchId(matchId) {
+        return this.apiCall(`game/save/${matchId}`);
+    }
+
     async getGamesWithSummoner(summonerName) {
         return this.apiCall(`/summoner/${summonerName}`);
     }
@@ -94,12 +104,22 @@ class ApiManager {
         return this.apiCall(`summoner/${summonerId}`);
     }
 
-    async getActiveGame(summonerName) {
-        return this.apiCall(`game/active/${summonerName}`);
+    async getActiveGame(puuid) {
+        return this.apiCall(`game/active/${puuid}`);
     }
 
-    async getAdditionalData() {
-        return this.apiCall(`game/active-data/SirDomin`)
+    async getAdditionalData(puuid) {
+        return this.apiCall(`game/active-data/${puuid}`)
+    }
+
+    async login(data) {
+        return this.apiCall(`login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
     }
 
     async getGameByPuuId(puuId) {

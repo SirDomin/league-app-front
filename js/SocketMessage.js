@@ -5,6 +5,12 @@ export class SocketMessage {
     static GET_CHAMPION_SELECT_LOBBY_DATA = 'get_champion_select_lobby_data';
     static ACCEPT_TYPE = 'accept';
     static TEST = 'test';
+    static BAN_CHAMPION = 'ban_champion';
+    static PICK_CHAMPION = 'pick_champion';
+    static GET_AVAILABLE_CHESTS = 'get_available_chests';
+    static GET_AVAILABLE_CHESTS_DATA = 'get_available_chests_data';
+    static SAVE_CONFIG = 'save_config';
+    static GET_AVAILABLE_QUEUES = 'get_available_queues';
 
     constructor(type, data) {
         this.type = type;

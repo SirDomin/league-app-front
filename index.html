@@ -1,195 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>League XD</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <title>League of Legends Client</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="header-container">
-        <div class="header-button-container">
-            <div class="button-default" id="show-previous">Show previous</div>
+<div class="client-container">
+  <div class="header">
+    <h1>
+      League of Legends App
 
-            <div class="button-default" id="show-game">Show Game</div>
-            <div class="button-default" id="show-player">Show Player</div>
-        </div>
-
-        <h1 class="header" id="header"></h1>
-        <div class="header" id="status-container">
-            <div>
-                <div>Node <span id="node-status"></span></div>
-                <div>PHP <span id="server-status"></span></div>
-            </div>
-        </div>
+    </h1>
+    <div class="header-status-container">
+      <div>Client: <span class="offline-status" id="status-header">Offline</span></div>
+      <div class="chest-info-container">
+        <span>Chests: </span>
+        <span id="chest-info-container-available"></span>
+        <span id="chest-info-container-available-date"></span>
+      </div>
     </div>
-    <div id="container" class="active-game-container"></div>
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <div class="header">
-                <p id="game-info"></p>
-                <span class="close">&times;</span>
-            </div>
-            <div id="container-modal"></div>
-        </div>
-    </div>
+  </div>
+  <div class="menu" id="menu">
+    <a href="#home">Home</a>
+    <a href="#previous">Previous</a>
+    <a href="#current">Current</a>
+    <a href="#history">History</a>
+    <a href="#player">Player</a>
+    <a href="#game">Game</a>
+    <a href="#champions">Champions</a>
+    <a href="#config">Config</a>
+  </div>
+  <div class="content" id="content">
+  </div>
+  <div class="footer">
 
-    <script src="js/participant.js"> </script>
-    <script src="js/game.js"> </script>
-    <script src="js/stateDecider.js"> </script>
-    <script src="js/apiManager.js"> </script>
-    <script src="js/mocker.js"> </script>
-    <script src="js/contentManager.js"> </script>
-    <script>
-        const mocker = new Mocker();
-        const apiManager = new ApiManager(mocker, false);
-        const stateDecider = new StateDecider(apiManager);
-        const contentManager = new ContentManager();
-
-        const modal = document.getElementById("myModal");
-        const span = document.getElementsByClassName("close")[0];
-
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        stateDecider.onStateChange(StateDecider.ANY, StateDecider.END_OF_GAME, () => {
-            apiManager.saveGame()
-                .then(data => {
-                    if (data) {
-                        document.getElementById('header').innerHTML = 'Game Saved';
-
-                        contentManager.showPreviousGame();
-                    }
-                })
-
-            document.getElementById('header').innerHTML = 'End of Game';
-        });
-
-        stateDecider.onStateChange(StateDecider.ANY, StateDecider.CHAMPION_SELECT, () => {
-            contentManager.showTeammates();
-
-            document.getElementById('header').innerHTML = 'Champion Select';
-        });
-
-        stateDecider.onStateChange(StateDecider.ANY, StateDecider.IN_PROGRESS, () => {
-            document.getElementById('container').innerHTML = '';
-            document.getElementById('header').innerHTML = 'Game In progress';
-
-            contentManager.showCurrentGame();
-        });
-
-
-        stateDecider.onStateChange(StateDecider.NONE, StateDecider.MATCHMAKING, () => {})
-        stateDecider.onStateChange(StateDecider.MATCHMAKING, StateDecider.READY_CHECK, () => {})
-        stateDecider.onStateChange(StateDecider.READY_CHECK, StateDecider.IN_PROGRESS, () => {})
-        stateDecider.onStateChange(StateDecider.IN_PROGRESS, StateDecider.PRE_END_OF_GAME, () => {})
-        stateDecider.onStateChange(StateDecider.PRE_END_OF_GAME, StateDecider.END_OF_GAME, () => {})
-
-        stateDecider.onStateChange(StateDecider.ANY, StateDecider.READY_CHECK, () => {
-            apiManager.acceptMatch().then(data => {
-                console.log('Match accepted');
-            });
-
-            document.getElementById('header').innerHTML = 'Accepting Match';
-        });
-
-        stateDecider.onStateChange([null], [StateDecider.NONE, StateDecider.LOBBY, StateDecider.MATCHMAKING], () => {
-            document.getElementById('header').innerHTML = 'Waiting for game';
-
-            contentManager.displayWaitingForGame();
-        });
-
-        stateDecider.stateChanged(StateDecider.NONE)
-
-        const showPreviousButton = document.getElementById('show-previous');
-
-        showPreviousButton.addEventListener('click', () => {
-            stateDecider.forceState();
-            if (stateDecider.forced) {
-                contentManager.showPreviousGame();
-            }
-        })
-
-        const showGameButton = document.getElementById('show-game');
-
-        showGameButton.addEventListener('click', () => {
-            contentManager.showGame(prompt('show id'));
-        })
-
-        const showPlayerButton = document.getElementById('show-player');
-
-        showPlayerButton.addEventListener('click', () => {
-            const summonerName = prompt('Summoner Name:');
-
-            if (!summonerName) {
-                return;
-            }
-
-            contentManager.displayChampionSelectPlayers(
-                {
-                    participants: [
-                        {
-                            name: summonerName,
-                        }
-                    ]
-                }
-            )
-        })
-
-        let champions = [];
-
-        function getChampionById(id) {
-            if (id === null) {
-                return 'none'
-            }
-            for(const champion in champions.data) {
-                if (champions.data[`${champion}`].key === `${id}`) {
-                    return champions.data[`${champion}`]
-                }
-            }
-        }
-
-        apiManager.getChampions().then(data => {
-            champions = data;
-        })
-
-        function fmtMSS(s){return(s-(s%=60))/60+(9<s?':':':0')+s}
-
-        pingInterval = setInterval(() => {
-            try {
-                apiManager.getServerStatus().then(data => {
-                    if (data.status === 'OK') {
-                        document.getElementById('server-status').innerHTML = 'OK'
-                        document.getElementById('server-status').parentElement.classList.add('status-ok')
-                    }
-                })
-            } catch (e) {
-                document.getElementById('server-status').innerHTML = '--'
-                document.getElementById('server-status').parentElement.classList.add('status-bad')
-            }
-            try {
-                apiManager.getNodeServerStatus().then(data => {
-                    if (data && data.status === 'OK') {
-                        document.getElementById('node-status').innerHTML = 'OK'
-                        document.getElementById('node-status').parentElement.classList.add('status-ok')
-                    }
-                    else {
-                        document.getElementById('node-status').innerHTML = '--'
-                        document.getElementById('node-status').parentElement.classList.add('status-bad')
-                    }
-                })
-            } catch (e) {
-                document.getElementById('node-status').innerHTML = '--'
-                document.getElementById('node-status').parentElement.classList.add('status-bad')
-            }
-        }, 1000)
-    </script>
+  </div>
+</div>
+<div id="myModal" class="modal">
+  <div class="modal-content" id="modal-content">
+  </div>
+</div>
+<script src="js/script.js" type="module">
+</script>
 </body>
 </html>

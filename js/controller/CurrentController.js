@@ -2,6 +2,8 @@ import {ApiManager} from '../apiManager.js';
 import {StateDecider} from "../stateDecider.js";
 import {PreviousController} from "./PreviousController.js";
 import {GameController} from "./GameController.js";
+import {LocalStorage} from "../LocalStorage.js";
+import {QueueTypeTransformer} from "../QueueTypeTransformer.js";
 
 export class CurrentController {
     route;
@@ -16,6 +18,7 @@ export class CurrentController {
         this.previousController = new PreviousController();
         this.gameController = new GameController();
         this.container = null;
+        this.localStorage = new LocalStorage();
     }
 
     supports(route, data) {
@@ -35,7 +38,7 @@ export class CurrentController {
     }
 
     showCurrentGame() {
-        this.apiManager.getActiveGame('SirDomin')
+        this.apiManager.getActiveGame(this.localStorage.get('puuid'))
             .then(data => {
                 if (!data.info) {
                     this.container.innerHTML = 'Not In game'
@@ -51,7 +54,10 @@ export class CurrentController {
     }
 
     stateChanged(state) {
-        this.stateDecider.updateGameState(state);
+        if (this.stateDecider) {
+            this.stateDecider.updateGameState(state);
+
+        }
     }
 
     displayContent(data, container) {
@@ -197,7 +203,7 @@ export class CurrentController {
     }
 
     addNewData(participants) {
-        this.apiManager.getAdditionalData()
+        this.apiManager.getAdditionalData(this.localStorage.get('puuid'))
             .then(data => {
                 document.getElementById('content').innerHTML = '';
 
@@ -325,7 +331,7 @@ export class CurrentController {
         dateItem.textContent = `Date: ${date.toLocaleDateString()} ${date.getHours()}:${date.getMinutes()}`;
 
         let modeItem = document.createElement('div');
-        modeItem.textContent = `Mode: ${info.gameMode}`;
+        modeItem.textContent = `Mode: ${QueueTypeTransformer.convert(info.queueId)}`;
 
         div.appendChild(dateItem);
         div.appendChild(modeItem);
@@ -356,6 +362,14 @@ export class CurrentController {
             document.getElementById('modal-content').innerHTML = ''
             this.gameController.showGame(data.matchId, document.getElementById('modal-content'), gameContainer);
         });
+
+        const activePlayer = info.participants.filter(participant => {
+            return participant.puuid === this.localStorage.get('puuid');
+        })
+
+        console.log(info);
+
+        gameId.classList.add()
         labelRedirect.appendChild(gameId);
         div.appendChild(labelRedirect);
 

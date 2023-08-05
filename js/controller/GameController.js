@@ -1,4 +1,5 @@
 import {ApiManager} from '../apiManager.js';
+import {QueueTypeTransformer} from "../QueueTypeTransformer.js";
 
 export class GameController {
     route;
@@ -40,7 +41,8 @@ export class GameController {
                 const headerInfo = document.createElement('div');
                 headerInfo.classList.add('header-game');
 
-                headerInfo.innerHTML = `GAME: ${gameId} | ${formattedDate} | ( Duration ${this.fmtMSS(data.info.game_duration)} ) win: ${winningTeam} | MODE: ${data.info.game_mode}-${data.info.game_type}`
+                headerInfo.innerHTML = `GAME: ${gameId} | ${formattedDate} | ( Duration ${this.fmtMSS(data.info.game_duration)} ) win: ${winningTeam} | MODE: ${QueueTypeTransformer.convert(data.info.queue_id)}`
+
                 data.info.participants.forEach((participant, index) => {
                     let card = this.getDetailedCard(participant);
                     card.classList.add(`item${index}`)
