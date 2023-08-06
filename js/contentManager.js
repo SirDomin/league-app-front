@@ -202,6 +202,11 @@ export class ContentManager {
             case SocketMessage.GET_AVAILABLE_QUEUES:
                 this.availableQueues = message.data;
             break;
+            case SocketMessage.GET_CLIENT_VERSION:
+                this.controllers.forEach(controller => {
+                    controller.clientVersion = message.data;
+                });
+            break;
 
         }
         console.log(message);

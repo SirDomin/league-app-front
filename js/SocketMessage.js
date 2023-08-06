@@ -11,6 +11,7 @@ export class SocketMessage {
     static GET_AVAILABLE_CHESTS_DATA = 'get_available_chests_data';
     static SAVE_CONFIG = 'save_config';
     static GET_AVAILABLE_QUEUES = 'get_available_queues';
+    static GET_CLIENT_VERSION = 'get_client_version';
 
     constructor(type, data) {
         this.type = type;

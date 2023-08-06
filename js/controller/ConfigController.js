@@ -11,6 +11,7 @@ export class ConfigController {
         this.champions = [];
         this.config = [];
         this.localStorage = new LocalStorage();
+        this.clientVersion = null;
     }
 
     supports(route, data) {
@@ -22,7 +23,7 @@ export class ConfigController {
         if (this.config === null) {
             this.config = [];
         }
-        fetch('http://ddragon.leagueoflegends.com/cdn/13.14.1/data/en_US/champion.json').then(data => {
+        fetch(`http://ddragon.leagueoflegends.com/cdn/${this.clientVersion}.1/data/en_US/champion.json`).then(data => {
             return data.json()
         }).then(data => {
             this.champions = Object.keys(data.data).map(object => {

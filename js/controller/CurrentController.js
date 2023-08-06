@@ -19,6 +19,7 @@ export class CurrentController {
         this.gameController = new GameController();
         this.container = null;
         this.localStorage = new LocalStorage();
+        this.clientVersion = null;
     }
 
     supports(route, data) {
@@ -64,7 +65,7 @@ export class CurrentController {
         this.container = container;
         this.stateDecider = new StateDecider();
 
-        this.apiManager.getChampions().then(data => {
+        this.apiManager.getChampions(this.clientVersion).then(data => {
             this.champions = data;
         })
 

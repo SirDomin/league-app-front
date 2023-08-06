@@ -39,12 +39,12 @@ export class ApiManager {
         return null;
     }
 
-    async riotCall() {
+    async riotCall(clientVersion) {
         if (this.mockValues === true) {
             return this.mocker.getMock(`http://ddragon.leagueoflegends.com/cdn/data/en_US/champion.json`);
         }
 
-        return this.createRequest('http://ddragon.leagueoflegends.com/cdn/13.12.1/data/en_US/champion.json');
+        return this.createRequest(`http://ddragon.leagueoflegends.com/cdn/${clientVersion}.1/data/en_US/champion.json`);
     }
 
     async acceptMatch() {
@@ -96,8 +96,8 @@ export class ApiManager {
         return this.apiCall(`/summoner/${summonerName}`);
     }
 
-    async getChampions() {
-        return this.riotCall()
+    async getChampions(clientVersion) {
+        return this.riotCall(clientVersion)
     }
 
     async getSummoner(summonerId) {
