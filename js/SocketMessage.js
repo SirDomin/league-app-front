@@ -12,6 +12,7 @@ export class SocketMessage {
     static SAVE_CONFIG = 'save_config';
     static GET_AVAILABLE_QUEUES = 'get_available_queues';
     static GET_CLIENT_VERSION = 'get_client_version';
+    static GET_CLIENT_DATA = 'get_client_data';
 
     constructor(type, data) {
         this.type = type;

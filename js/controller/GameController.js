@@ -4,9 +4,9 @@ import {QueueTypeTransformer} from "../QueueTypeTransformer.js";
 export class GameController {
     route;
 
-    constructor() {
+    constructor(apiManager) {
         this.route = 'game';
-        this.apiManager = new ApiManager();
+        this.apiManager = apiManager;
     }
 
     supports(route, data) {
@@ -14,6 +14,7 @@ export class GameController {
     }
 
     displayContent(gameId, container) {
+        console.log(this.apiManager.header);
         const gameContainer = document.createElement('div');
         gameContainer.classList.add('game-detailed-container');
         container.appendChild(this.createPanel());

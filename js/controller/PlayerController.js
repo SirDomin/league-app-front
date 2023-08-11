@@ -4,10 +4,10 @@ import {CurrentController} from "./CurrentController.js";
 export class PlayerController {
     route;
 
-    constructor() {
+    constructor(apiManager) {
         this.route = 'player';
-        this.apiManager = new ApiManager();
-        this.currentController = new CurrentController();
+        this.apiManager = apiManager;
+        this.currentController = new CurrentController(null, apiManager);
     }
 
     supports(route, data) {

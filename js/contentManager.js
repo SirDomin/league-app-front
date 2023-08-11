@@ -15,18 +15,19 @@ export class ContentManager {
     previousController;
     socketReady;
     constructor() {
+        this.apiManager = new ApiManager();
+        this.readyState = false;
         this.controllers = [
-            new PreviousController(),
-            new CurrentController(this),
-            new GameController(),
-            new PlayerController(),
-            new HistoryController(),
-            new ChampionsController(this),
-            new ConfigController(this)
+            new PreviousController(this.apiManager),
+            new CurrentController(this, this.apiManager),
+            new GameController(this.apiManager),
+            new PlayerController(this.apiManager),
+            new HistoryController(this.apiManager),
+            new ChampionsController(this, this.apiManager),
+            new ConfigController(this, this.apiManager)
         ];
         this.availableQueues = [];
 
-        this.apiManager = new ApiManager();
         this.localStorage = new LocalStorage();
 
         this.socketReady = false;
@@ -84,26 +85,33 @@ export class ContentManager {
             this.testFunc();
         })
 
-        if (this.socketReady === true && this.availableQueues !== []) {
+        this.handleContent(controller, data);
+    }
+
+    handleContent(controller, data) {
+        if (this.readyState === true) {
             controller.displayContent(data, document.getElementById('content'));
         } else {
             setTimeout(() => {
-                controller.displayContent(data, document.getElementById('content'));
+                this.handleContent(controller, data);
             }, 100);
         }
     }
 
     loginAs(data) {
-        console.log(data.displayName);
+        const summonerData = data.summonerData;
+
         document.getElementById('status-header').classList.add('online-status');
         document.getElementById('status-header').classList.remove('offline-status');
-        document.getElementById('status-header').innerHTML = `Online (${data.displayName})`;
+        document.getElementById('status-header').innerHTML = `Online (${summonerData.displayName})`;
 
         this.apiManager.login(data).then(loginData => {
-           this.localStorage.save('puuid', loginData['puuid']);
+            this.apiManager.header = loginData['token'];
+            this.readyState = true;
+            this.localStorage.save('puuid', loginData['puuid']);
         });
 
-        this.localStorage.save('summonerId', data['summonerId'])
+        this.localStorage.save('summonerId', summonerData['summonerId'])
 
         this.socket.send(new SocketMessage(SocketMessage.GET_STATE_TYPE, {}).toString());
     }
@@ -202,10 +210,12 @@ export class ContentManager {
             case SocketMessage.GET_AVAILABLE_QUEUES:
                 this.availableQueues = message.data;
             break;
-            case SocketMessage.GET_CLIENT_VERSION:
+            case SocketMessage.GET_CLIENT_DATA:
                 this.controllers.forEach(controller => {
-                    controller.clientVersion = message.data;
+                    controller.clientVersion = message.data.version;
+                    controller.platformId = message.data.platformData.toLowerCase();
                 });
+                this.loginAs(message.data);
             break;
 
         }

@@ -3,9 +3,9 @@ import {ApiManager} from '../apiManager.js';
 export class ChampionsController {
     route;
 
-    constructor(contentManager) {
+    constructor(contentManager, apiManager) {
         this.route = 'champions';
-        this.apiManager = new ApiManager();
+        this.apiManager = apiManager;
         this.contentManager = contentManager;
         this.showAvailableOnly = false;
         this.lastFilteringData = [];

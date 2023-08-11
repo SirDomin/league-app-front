@@ -8,6 +8,7 @@ export class ApiManager {
     constructor(mockValues = false) {
         this.mocker = new Mocker();
         this.mockValues = mockValues;
+        this.header = null;
     }
 
     async createRequest(url, data = {}) {
@@ -31,6 +32,10 @@ export class ApiManager {
 
     async apiCall(url, data = {}) {
         try {
+            data.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.header}`,
+            }
             return await this.createRequest(`${this.apiUrl}/${url}`, data);
         } catch (exception) {
 
@@ -45,14 +50,6 @@ export class ApiManager {
         }
 
         return this.createRequest(`http://ddragon.leagueoflegends.com/cdn/${clientVersion}.1/data/en_US/champion.json`);
-    }
-
-    async acceptMatch() {
-        return this.clientCall('accept')
-    }
-
-    async getGameState() {
-        return this.clientCall('game-state')
     }
 
     async getChampionSelectPlayers() {
@@ -77,15 +74,12 @@ export class ApiManager {
     async saveGameData(data) {
         return this.apiCall('game/save-result',{
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(data)
         })
     }
 
     async getHistory(puuid, limit, start, lastTimestamp) {
-        return this.apiCall(`game/history/${puuid}/${limit}/${start}/${lastTimestamp}`);
+        return this.apiCall(`game/history/${limit}/${start}/${lastTimestamp}`);
     }
 
     async saveGameByMatchId(matchId) {
@@ -115,9 +109,6 @@ export class ApiManager {
     async login(data) {
         return this.apiCall(`login`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(data)
         });
     }

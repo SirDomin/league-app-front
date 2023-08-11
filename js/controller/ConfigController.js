@@ -4,9 +4,9 @@ import {LocalStorage} from "../LocalStorage.js";
 export class ConfigController {
     route;
     config;
-    constructor(contentManager) {
+    constructor(contentManager, apiManager) {
         this.route = 'config';
-        this.apiManager = new ApiManager();
+        this.apiManager = apiManager;
         this.contentManager = contentManager;
         this.champions = [];
         this.config = [];

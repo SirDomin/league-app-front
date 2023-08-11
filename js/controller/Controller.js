@@ -3,9 +3,9 @@ import {ApiManager} from '../apiManager.js';
 export class Controller {
     route;
 
-    constructor() {
+    constructor(apiManager) {
         this.route = '';
-        this.apiManager = new ApiManager();
+        this.apiManager = apiManager;
     }
 
     supports(route, data) {

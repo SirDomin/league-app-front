@@ -8,15 +8,15 @@ import {QueueTypeTransformer} from "../QueueTypeTransformer.js";
 export class CurrentController {
     route;
     container;
-    constructor(contentManager) {
+    constructor(contentManager, apiManager) {
         this.route = 'current';
-        this.apiManager = new ApiManager();
+        this.apiManager = apiManager;
         this.stateDecider = null;
         this.interval = null;
         this.champions = [];
         this.contentManager = contentManager;
-        this.previousController = new PreviousController();
-        this.gameController = new GameController();
+        this.previousController = new PreviousController(apiManager);
+        this.gameController = new GameController(apiManager);
         this.container = null;
         this.localStorage = new LocalStorage();
         this.clientVersion = null;

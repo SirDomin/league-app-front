@@ -6,12 +6,12 @@ import {QueueTypeTransformer} from "../QueueTypeTransformer.js";
 export class HistoryController {
     route;
 
-    constructor() {
+    constructor(apiManager) {
         this.route = 'history';
-        this.apiManager = new ApiManager();
+        this.apiManager = apiManager;
         this.limit = 50;
         this.start = 0;
-        this.gameController = new GameController();
+        this.gameController = new GameController(apiManager);
         this.contentLoaded = true;
         this.lastTimestamp = 0;
         this.localStorage = new LocalStorage();

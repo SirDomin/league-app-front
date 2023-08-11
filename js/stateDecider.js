@@ -1,5 +1,3 @@
-import {ApiManager} from './apiManager.js';
-
 export class StateDecider {
     static LOBBY = 'Lobby';
     static NONE = 'None';
@@ -14,7 +12,6 @@ export class StateDecider {
     static FORCED = 'Forced';
 
     constructor() {
-        this.apiManager = new ApiManager();
         this.gameState = null;
         this.handlers = [];
         this.refreshRate = 1000;

@@ -3,9 +3,9 @@ import {ApiManager} from '../apiManager.js';
 export class PreviousController {
     route;
 
-    constructor() {
+    constructor(apiManager) {
         this.route = 'previous';
-        this.apiManager = new ApiManager();
+        this.apiManager = apiManager;
     }
 
     supports(route, data) {

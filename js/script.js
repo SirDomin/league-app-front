@@ -2,7 +2,6 @@ import {ContentManager} from "./contentManager.js";
 import {ApiManager} from "./apiManager.js";
 
 const contentManager = new ContentManager();
-const apiManager = new ApiManager();
 
 function loadContent() {
     const hash = window.location.hash.substr(1);
